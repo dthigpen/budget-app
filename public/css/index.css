@@ -1,7 +1,111 @@
 /* @import url("./css/reset.css") */
 /* @import url("./css/pico.min.css") */
 
-/* Full bleed css  */
+nav {
+	padding: 0.5rem
+}
+
+/* .box { */
+/* 	border: thin solid black; */
+/* 	margin: 0.25rem; */
+/* } */
+
+.center {
+	text-align: center
+}
+
+.sections {
+	height: 600px;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+.month-bar {
+	display: flex;
+	/* justify-content: center; */
+}
+.month-bar > div[role="group"] {
+	margin: 0 auto;
+	max-width: 40rem;
+	/* border: thick solid black; */
+}
+.overall-section {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4rem;
+}
+
+.overall-section-totals {
+	flex-grow: 2;
+	/* height: 8rem; */
+	flex: display;
+	flex-direction: column;
+	align-items: center;
+	padding: 0.1rem 0.2rem;
+}
+
+.overall-section-totals  > * {
+	width: 1fr;
+}
+
+.overall-section-totals > h3,h4 {
+	text-align: center;
+}
+
+.overall-section-totals-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+
+.overall-section-categories {
+	flex-grow: 3;
+	/* height: 8rem; */
+	flex: display;
+	flex-direction: column;
+	justify-content: center;
+	padding: 0.1rem 0.2rem;
+}
+
+.overall-section-categories  > * {
+	width: 1fr;
+}
+
+.overall-section-categories-title {
+	text-align: center;
+}
+
+.overall-section-categories-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+
+.transactions-section {
+	display: flex;
+	flex-direction: column;
+	height: 20rem;
+	padding-top: 1rem;
+}
+.transactions-section .center {
+	text-align: center
+}
+.transactions-section-bar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	/* gap: 1rem; */
+}
+.transactions-section-bar div {
+	display: flex;
+	justify-content: flex-end;
+	gap: 1rem
+}
+.hitory-section-row {
+	height: 4rem;
+}
+/* Full bleed styles */
+/*
 .wrapper {
   display: grid;
   grid-template-columns:
@@ -9,12 +113,11 @@
     min(65ch, 100%)
     1fr;
 }
-
 .wrapper > * {
   grid-column: 2;
 }
-
 .full-bleed {
   width: 100%;
   grid-column: 1 / 4;
 }
+*/

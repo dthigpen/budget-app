@@ -4,11 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Website Title</title>
+    <title>My Budget</title>
 
     <meta
       name="description"
-      content="A simple description of your website"
+      content="A simple application to track monthly expenses"
     />
 
     <link rel="stylesheet" href="css/reset.css" />
@@ -16,11 +16,121 @@
     <link rel="stylesheet" href="css/index.css" />
   </head>
   <body>
-    <main class="wrapper">
-		<h1>Budget</h1>
-		<div class="month-overview">
-		</div>
-    </main>
+  <header>
+  	<nav>
+        <!-- <div class="logo"> -->
+        <h2>Budget App Name</h2>
+        <!-- </div> -->
+        <div class="nav-items">
+          <ul class="overview">
+            <li><a href="#">Monthly Reports</a></li>
+            <li><a href="#">Budget Editor</a></li>
+            <li><a href="#">Settings</a></li>
+          </ul>
+        </div>
+    </nav>
+  </header>
+  	<main class="container">
+  		<div class="sections box">
+  			<div class="month-bar box">
+	  			<div role="group">
+	  				<button>Overview</button>
+	  				<button class="outline">May 2024</button>
+	  				<button class="outline">April 2024</button>
+	  				<button class="outline">March 2024</button>
+	  			</div>
+  			</div>
+  			<div class="overall-section box">
+  				<div class="overall-section-totals box">
+	  				<h3 class="overall-section-totals-title">Overall</h3>
+	  				<div class="overall-section-totals-row box">
+	  					<div>Income</div>
+	  					<div>$4094.50</div>
+	  				</div>
+	  				<div class="overall-section-totals-row box">
+	  					<div>Expenses</div>
+	  					<div>$2082.13</div>
+	  				</div>
+	  				<div class="overall-section-totals-row box">
+	  					<div>Savings</div>
+	  					<div>(49%) $2012.37</div>
+	  				</div>
+	  				
+	  			</div>
+	  			<div class="overall-section-categories box">
+	  				<h3 class="overall-section-categories-title">Top Categories</h3>
+	  				<div class="overall-section-categories-row box">
+	  					<div>Mortgage</div>
+	  					<div>$1040.50</div>
+	  				</div>
+	  				<div class="overall-section-categories-row box">
+	  					<div>Groceries</div>
+	  					<div>$498.43</div>
+	  				</div>
+	  				<div class="overall-section-categories-row box">
+	  					<div>Electric/Gas</div>
+	  					<div>$201.50</div>
+	  				</div>
+	  				<div class="overall-section-categories-row box">
+	  					<div>Uncategorized</div>
+	  					<div>$192.12</div>
+	  				</div>
+	  				<div class="overall-section-categories-row box">
+	  					<div>Phone</div>
+	  					<div>$79.05</div>
+	  				</div>
+	  			</div>
+  			</div>
+  			<div class="transactions-section box">
+  				<div class="transactions-section-bar">
+					<h3 class="box">Transactions</h3>
+					<div>
+		  				<button>New</button>
+		  				<button>Upload</button>
+					</div>
+  				</div>
+  				<table>
+  				  <tr>
+  				    <th>Date</th>
+  				    <th>Description</th>
+  				    <th>Amount</th>
+  				    <th>Category</th>
+  				    <th>Status</th>
+  				  </tr>
+  				  <tr>
+  				    <td>5/29</td>
+  				    <td>Walmart #123</td>
+  				    <td>$43.51</td>
+  				    <td>Groceries</td>
+  				    <td>Confirmed</td>
+  				  </tr>
+  				  <tr>
+  				    <td>5/28</td>
+  				    <td>Amazon MKPLACE</td>
+  				    <td>$23.05</td>
+  				    <td>Household</td>
+  				    <td>Planned</td>
+  				  </tr>
+  				  <tr>
+  				    <td>5/24</td>
+  				    <td>COMPANY XYZ DEP</td>
+  				    <td>$1201.13</td>
+  				    <td>Job</td>
+  				    <td>Planned</td>
+  				  </tr>
+  				  <tr>
+  				    <td>5/29</td>
+  				    <td>Walmart #123</td>
+  				    <td>$43.51</td>
+  				    <td>Groceries</td>
+  				    <td>Confirmed</td>
+  				  </tr>
+  				  
+  				</table>
+  				
+  			</div>
+  		</div>
+  	</main>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>
