@@ -3,6 +3,7 @@
     "dev": "npx web-dev-server --node-resolve --port 8080 --open public/ --watch"
   },
   "dependencies": {
+    "@picocss/pico": "^2.0.6",
     "@shoelace-style/shoelace": "^2.16.0"
   },
   "devDependencies": {
