@@ -1,8 +1,7 @@
 /* @import url("./css/reset.css") */
 /* @import url("./css/pico.min.css") */
-
 nav {
-	padding: 0.5rem
+	
 }
 
 /* .box { */
@@ -22,13 +21,27 @@ nav {
 }
 .month-bar {
 	display: flex;
-	/* justify-content: center; */
+	/* flex-wrap: row; */
+	justify-content: center;
+	gap: 0.5rem;
 }
-.month-bar > div[role="group"] {
-	margin: 0 auto;
-	max-width: 40rem;
-	/* border: thick solid black; */
+.month-bar .month-links {
+	/* display: flex; */
+	/* flex-wrap: row; */
+	/* gap: 1.5rem; */
+	
+	overflow-x: auto;
 }
+.month-bar a {
+	padding: 0 0.5rem;
+}
+.month-bar button {
+	padding: 0.2rem 1rem;
+}
+.month-bar div[role="button"] {
+	border-radius: 15%;
+}
+
 .overall-section {
 	display: flex;
 	flex-wrap: wrap;
@@ -89,6 +102,12 @@ nav {
 }
 .transactions-section .center {
 	text-align: center
+}
+.transactions-section table {
+	display: block;
+	overflow-x: auto;
+	white-space: nowrap;
+	width: 100%;
 }
 .transactions-section-bar {
 	display: flex;
