@@ -1,13 +1,20 @@
 {
   "scripts": {
-    "dev": "npx web-dev-server --node-resolve --port 8080 --open public/ --watch"
+    "dev": "bash scripts/dev.sh",
+    "vender": "bash scripts/vender.sh",
+    "pretty": "npx prettier ./public/",
+    "lint": "npx eslint ./public/"
   },
   "dependencies": {
     "@picocss/pico": "^2.0.6",
     "@shoelace-style/shoelace": "^2.16.0"
   },
   "devDependencies": {
-    "@web/dev-server": "^0.4.6"
+    "@eslint/js": "^9.10.0",
+    "@web/dev-server": "^0.4.6",
+    "eslint": "^9.10.0",
+    "globals": "^15.9.0",
+    "prettier": "^3.3.3"
   },
   "name": "frontend",
   "version": "1.0.0",

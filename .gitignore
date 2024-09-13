@@ -1,3 +1,7 @@
+# Vender libs
+/public/css/vender
+/public/js/vender
+
 # Logs
 logs
 *.log
