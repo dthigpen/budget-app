@@ -31,6 +31,7 @@
     </nav>
   </header>
   	<main class="container">
+  	<x-app-context>
   		<div class="sections box">
   			<div class="month-bar box">
 	  			<div role="group">
@@ -86,7 +87,12 @@
 					<h3 class="box">Transactions</h3>
 					<div>
 		  				<button>New</button>
-		  				<button>Upload</button>
+		  				<div>
+		  					<input id="file-upload-input" type="file" hidden></input>
+		  					<button id="file-upload-btn">Upload</button>
+		  				</div>
+		  				
+		  				
 					</div>
   				</div>
   				<table>
@@ -119,7 +125,7 @@
   				    <td>Planned</td>
   				  </tr>
   				  <tr>
-  				    <td>5/29</td>
+  				    <td>5/20</td>
   				    <td>Walmart #123</td>
   				    <td>$43.51</td>
   				    <td>Groceries</td>
@@ -130,7 +136,8 @@
   				
   			</div>
   		</div>
+ 	</x-app-context>
+	<script type="module" src="./js/index.js"></script>
   	</main>
-    <script type="module" src="js/main.js"></script>
   </body>
 </html>

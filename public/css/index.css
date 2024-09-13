@@ -7,7 +7,7 @@ nav {
 
 /* .box { */
 /* 	border: thin solid black; */
-/* 	margin: 0.25rem; */
+/* 	margin: 0.1rem; */
 /* } */
 
 .center {
@@ -94,12 +94,15 @@ nav {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	flex-wrap: row;
 	/* gap: 1rem; */
 }
-.transactions-section-bar div {
+
+.transactions-section-bar > div {
 	display: flex;
 	justify-content: flex-end;
-	gap: 1rem
+	align-items: center;
+	gap: 1rem;
 }
 .hitory-section-row {
 	height: 4rem;
