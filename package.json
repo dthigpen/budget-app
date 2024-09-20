@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "bash scripts/dev.sh",
     "vender": "bash scripts/vender.sh",
-    "pretty": "npx prettier ./public/",
+    "format": "npx prettier --config .prettierrc.json --write ./public/ '!**/vender'",
+    "deploy": "npx gh-pages -d public",
     "lint": "npx eslint ./public/"
   },
   "dependencies": {
@@ -13,6 +14,7 @@
     "@eslint/js": "^9.10.0",
     "@web/dev-server": "^0.4.6",
     "eslint": "^9.10.0",
+    "gh-pages": "^6.1.1",
     "globals": "^15.9.0",
     "prettier": "^3.3.3"
   },
