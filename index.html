@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>My Budget</title>
+
+    <meta
+      name="description"
+      content="A simple application to track monthly expenses"
+    />
+
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/vender/pico.min.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <!-- <link rel="stylesheet" href="js/vender/shoelace/cdn/themes/light.css" /> -->
+  </head>
+  <body>
+    <!-- <script type="module" src="js/vender/shoelace/cdn/shoelace.js"></script> -->
+    <main class="container">
+      <nav>
+        <ul>
+          <strong>Budget App</strong>
+        </ul>
+        <ul>
+          <li><a href="#">Monthly Reports</a></li>
+          <li><a href="#">Budget Editor</a></li>
+          <li><a href="#">Settings</a></li>
+        </ul>
+      </nav>
+      <x-app-context>
+        <div class="sections box">
+          <div class="month-bar box">
+            <button>Average</button>
+          </div>
+          <div class="overall-section box">
+            <div class="overall-section-totals box">
+              <h3 class="overall-section-totals-title">Overall</h3>
+              <div class="overall-section-totals-row box">
+                <div>Income</div>
+                <div data-field="income">$4094.50</div>
+              </div>
+              <div class="overall-section-totals-row box">
+                <div>Expenses</div>
+                <div data-field="expenses">$2082.13</div>
+              </div>
+              <div class="overall-section-totals-row box">
+                <div>Savings</div>
+                <div data-field="savings">(49%) $2012.37</div>
+              </div>
+            </div>
+            <div class="overall-section-categories box">
+              <h3 class="overall-section-categories-title">Top Categories</h3>
+              <div class="overall-section-categories-row box">
+                <div>Mortgage</div>
+                <div>$1040.50</div>
+              </div>
+              <div class="overall-section-categories-row box">
+                <div>Groceries</div>
+                <div>$498.43</div>
+              </div>
+              <div class="overall-section-categories-row box">
+                <div>Electric/Gas</div>
+                <div>$201.50</div>
+              </div>
+              <div class="overall-section-categories-row box">
+                <div>Uncategorized</div>
+                <div>$192.12</div>
+              </div>
+              <div class="overall-section-categories-row box">
+                <div>Phone</div>
+                <div>$79.05</div>
+              </div>
+            </div>
+          </div>
+          <div class="transactions-section box">
+            <div class="transactions-section-bar">
+              <h3 class="box">Transactions</h3>
+              <div>
+                <button>New</button>
+                <div>
+                  <input id="file-upload-input" type="file" hidden />
+                  <button id="file-upload-btn">Upload</button>
+                </div>
+              </div>
+            </div>
+            <table id="transactions-table">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Account</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </x-app-context>
+      <script type="module" src="./js/index.js"></script>
+    </main>
+  </body>
+</html>
