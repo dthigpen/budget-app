@@ -44,8 +44,8 @@ function generateTransactions() {
       const dayNum = getRandomInt(1, 29);
       const transaction = {
         date: `${yearMonth}-${String(dayNum).padStart(2, '0')}`,
-        description: descriptions[getRandomInt(0, descriptions.length)],
-        account: accounts[getRandomInt(0, accounts.length)],
+        description: descriptions[getRandomInt(0, descriptions.length - 1)],
+        account: accounts[getRandomInt(0, accounts.length - 1)],
         amount: Number(getRandomInt(1000, 29599) / 100),
       };
       transactions.push(transaction);
