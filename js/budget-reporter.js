@@ -1,13 +1,10 @@
-export function generateReports(budget, allTransactions) {
-  // read budget from drive
-  // read transactions
+function sum(...arr) {
+  return arr.reduce((a, b) => a + b, 0);
+}
+export function categorizeTransactions(budget, allTransactions) {
   // for each transaction
   //   assign to a category
   // treat remaining as uncategorized
-  // generate report data
-  //   category monthly averages
-  //   uncategorized transactions without data field
-
   // handle actions
   const actions = budget.actions ?? [];
   const preCategorizationActions = actions.filter(
@@ -21,7 +18,7 @@ export function generateReports(budget, allTransactions) {
   );
   if (unhandledActions.length > 0) {
     unhandledActions.forEach((a) =>
-      console.log(`Unknown action type for action: ${JSON.stringify(a)}`),
+      console.warn(`Unknown action type for action: ${JSON.stringify(a)}`),
     );
     throw Error(`Invalid action: ${JSON.stringify(a)}`);
   }
@@ -50,7 +47,6 @@ export function generateReports(budget, allTransactions) {
         const replacementTransactions = [];
 
         const { data: dd, ...temp } = t;
-        console.log(temp);
         const originalAmount = t.amount;
         const signMultiplier = t.amount >= 0 ? 1 : -1;
         const absOriginalAmount = Math.abs(originalAmount);
@@ -129,9 +125,9 @@ export function generateReports(budget, allTransactions) {
         replacementTransactions.forEach((r) => {
           if (r.note === undefined || r.note === null) r.note = `Generated`;
         });
-        console.log(
-          JSON.stringify(replacementTransactions.map(({ data, ...t }) => t)),
-        );
+        // console.log(
+        //   JSON.stringify(replacementTransactions.map(({ data, ...t }) => t)),
+        // );
         addedTransactions.push(...replacementTransactions);
       });
     }
@@ -188,84 +184,107 @@ export function generateReports(budget, allTransactions) {
   const transactionsAfterPostActions = [
     ...preprocessedTransactions.filter((t) => !hiddenTransactions.includes(t)),
   ];
+  return transactionsAfterPostActions;
+}
+
+function generateReport(budget, transactions) {
+  const summary = {};
+  const transactionsByType = {}; // by income,expense,unrecognized
+  // Group month transactions by category
+  const categoryGroups = groupBy(transactions, ({ category }) => category);
+  for (const [categoryName, categoryTranactions] of Object.entries(
+    categoryGroups,
+  )) {
+    let categoryTotal = categoryTranactions
+      .map((t) => t.amount)
+      .reduce((a, b) => a + b, 0);
+    // category type is one of: uncategorized, income, expense
+    const categoryType =
+      categoryName === 'uncategorized'
+        ? 'uncategorized'
+        : (budget.categories.find((c) => c.name === categoryName)?.type ??
+          'expense');
+    // add uncategorized/income/expense to summary
+    if (!(categoryType in summary)) {
+      summary[categoryType] = { categories: {} };
+    }
+    // add total amount for the given category
+    summary[categoryType].categories[categoryName] = Number(
+      categoryTotal.toFixed(2),
+    );
+    // initialize transactions by type then category
+    if (!(categoryType in transactions)) {
+      transactionsByType[categoryType] = {};
+    }
+    const transactionsByCategory = transactionsByType[categoryType];
+
+    // TODO add count of hidden transactions
+
+    // remove category key from transactions
+    transactionsByCategory[categoryName] = categoryTranactions.map(
+      ({
+        // category = null,
+        ...t
+      }) => t,
+    );
+  }
+
+  for (const catTypeSummary of Object.values(summary)) {
+    const catTypeTotal = sum(...Object.values(catTypeSummary.categories));
+    catTypeSummary.total = Number(catTypeTotal.toFixed(2));
+  }
+  return {
+    summary,
+    transactions,
+  };
+}
+export function generateMonthReports(budget, allTransactions) {
+  // generate report data
+  //   category monthly averages
+  //   uncategorized transactions without data field
+  const categorizedTransactions = categorizeTransactions(
+    budget,
+    allTransactions,
+  );
 
   // generate report
   const report = {
-    monthly: [
-      // {
-      //   month: '2024-04',
-      //   categories: []
-      // }
-    ],
+    monthly: [],
+    summary: {},
   };
-  // calculate total stats
-  const monthGroups = groupBy(transactionsAfterPostActions, ({ date }) =>
+  // Group transactions by month
+  const monthGroups = groupBy(categorizedTransactions, ({ date }) =>
     date.slice(0, 7),
   );
+  // Sort entries before iterating over them
   const monthGroupEntries = Object.entries(monthGroups);
   monthGroupEntries.sort((b1, b2) => {
     return dateStringCompareTo(b1[0], b2[0]);
   });
   for (const [yearMonth, monthTransactions] of monthGroupEntries) {
+    const { summary, transactions } = generateReport(budget, monthTransactions);
     const monthReport = {
       lastUpdated: new Date().toISOString(),
       month: yearMonth,
-      summary: {},
-      transactions: {},
+      summary,
+      transactions,
     };
     report.monthly.push(monthReport);
-    monthTransactions.forEach((t) => delete t['data']);
-    const categoryGroups = groupBy(
-      monthTransactions,
-      ({ category }) => category,
-    );
-    for (const [categoryName, categoryTranactions] of Object.entries(
-      categoryGroups,
-    )) {
-      let categoryTotal = categoryTranactions
-        .map((t) => t.amount)
-        .reduce((a, b) => a + b, 0);
-      //categoryTotal = FLIP_SIGNS ? categoryTotal * -1 : categoryTotal
-      const categoryType =
-        categoryName === 'uncategorized'
-          ? 'uncategorized'
-          : (budget.categories.find((c) => c.name === categoryName)?.type ??
-            'expense');
-      if (!(categoryType in monthReport.summary)) {
-        monthReport.summary[categoryType] = { categories: {} };
-      }
-      monthReport.summary[categoryType].categories[categoryName] = Number(
-        categoryTotal.toFixed(2),
-      );
-      if (!(categoryType in monthReport.transactions)) {
-        monthReport.transactions[categoryType] = {};
-      }
-      // TODO add count of hidden transactions
-      monthReport.transactions[categoryType][categoryName] =
-        categoryTranactions.map(({ category = null, ...t }) => t);
-    }
-
-    for (const catTypeSummary of Object.values(monthReport.summary)) {
-      const catTypeTotal = Object.values(catTypeSummary.categories).reduce(
-        (a, b) => a + b,
-        0,
-      );
-      catTypeSummary.total = Number(catTypeTotal.toFixed(2));
-    }
-    // postActionTransactions.forEach(t => {
-    //   if(t.category) {
-    //     delete t['category']
-    //   }
-    // })
-    // console.log(JSON.stringify(report))
-
-    // const monthReportFile = getOrCreateFile(budgetFolder, `${yearMonth}-report.json`)
-    // monthReportFile.setContent(JSON.stringify(monthReport, null, 2))
   }
+  const { summary: overallSummary, transactions: overallTransactions } =
+    generateReport(budget, allTransactions);
+  const numMonths = monthGroupEntries.length;
+  for (const [transactionType, transactionTypeSummary] of Object.entries(
+    overallSummary,
+  )) {
+    transactionTypeSummary.average = Number(
+      (transactionTypeSummary.total / numMonths).toFixed(2),
+    );
+  }
+  report.summary = overallSummary;
+  report.transactions = overallTransactions;
+
   return report;
-  // aggregated report
-  // const existingFile = getOrCreateFile(budgetFolder, 'report.json')
-  // existingFile.setContent(JSON.stringify(report, null, 2))
 }
 
 function transactionMatchesCategory(transaction, category) {

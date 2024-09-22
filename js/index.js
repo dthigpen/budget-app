@@ -1,6 +1,7 @@
 import { registerAppContext } from './components/app-context.js';
-import { generateReports } from './budget-reporter.js';
+import { generateMonthReports } from './budget-reporter.js';
 import { generateTestData } from './test-data.js';
+import { createCompareTo } from './util.js';
 
 // Generate test data and save to local storage
 generateTestData();
@@ -30,7 +31,6 @@ function MonthSelectorBar(monthContainerEl) {
     monthContainerEl.querySelectorAll('button').forEach((btnEl) => {
       if (!btnEl.classList.contains('outline')) {
         selected = btnEl.getAttribute('data-value');
-        console.log({ selected });
       }
       btnEl.remove();
     });
@@ -60,15 +60,9 @@ function MonthSelectorBar(monthContainerEl) {
     }
     monthContainerEl.appendChild(avgBtn);
     // Setup month buttons
-    const sortedReports = Object.values(appContext.reports).sort((a, b) => {
-      if (a.month < b.month) {
-        return 1;
-      }
-      if (a.month > b.month) {
-        return -1;
-      }
-      return 0;
-    });
+    const sortedReports = Object.values(appContext.reports.monthly).sort(
+      createCompareTo((r) => r.month, true),
+    );
     for (const report of sortedReports) {
       const btn = document.createElement('button');
       const [yr, mo] = report.month.split('-');
@@ -85,27 +79,37 @@ function MonthSelectorBar(monthContainerEl) {
   }
   appContext.addEventListener('reportsChange', updateMonthButtons);
 }
-function TransactionsTable(tableEl) {
+function TransactionsPanel(tableEl) {
   const appContext = tableEl.closest('x-app-context');
 
   function updateTable() {
+    const isAvg =
+      appContext.selectedMonth === undefined ||
+      appContext.selectedMonth === null;
+
+    const transactions =
+      (isAvg
+        ? appContext.reports.transactions
+        : appContext.reports.monthly[appContext.selectedMonth].transactions
+      )?.sort(createCompareTo((t) => t.date, true)) ?? [];
+
     console.log('Updating table');
+    console.log({ transactions, isAvg });
     tableEl
       .querySelector('tbody')
       .querySelectorAll('tr')
       .forEach((rowEl) => {
-        // if(!rowEl.classList.contains('header-row')) {
         rowEl.parentNode.removeChild(rowEl);
-        // }
       });
-    for (const transaction of appContext.transactions) {
+
+    for (const transaction of transactions) {
       const row = tableEl.querySelector('tbody').insertRow();
       const data = [
         transaction.date,
         transaction.description,
         transaction.amount,
         transaction.account,
-        'Uncategorized',
+        transaction.category ?? 'Uncategorized',
         'Entered',
       ];
       data.forEach((d) =>
@@ -113,165 +117,132 @@ function TransactionsTable(tableEl) {
       );
     }
   }
-  appContext.addEventListener('transactionsChange', () => updateTable());
+  appContext.addEventListener('reportsChange', updateTable);
+  appContext.addEventListener('transactionsChange', updateTable);
+  appContext.addEventListener('selectedMonthChange', updateTable);
 }
 
 function TransactionsUpload(el) {
   el.addEventListener('click', () => {
     document.getElementById('file-upload-input').click();
-    // TODO put this on liustener that has json of file
-    el.closest('x-app-context').transactions = [
-      { description: 'foo', amount: 123.45 },
-    ];
   });
 }
 
-function MonthPanel(el, options = {}) {
-  const defaultOptions = {
-    avg: true,
-  };
+function updateMonthTotalsPanel(
+  totalsEl,
+  reports,
+  selectedMonth,
+  currencySymbol,
+) {
+  const isAvg = selectedMonth === undefined || selectedMonth === null;
+  const summary = isAvg
+    ? reports.summary
+    : reports.monthly[selectedMonth].summary;
+  const totalOrAvgKey = isAvg ? 'average' : 'total';
+  const incomeTotal = summary?.income?.[totalOrAvgKey] ?? 0.0;
+  const expensesTotal = summary?.expense?.[totalOrAvgKey] ?? 0.0;
+  const savingsTotal = incomeTotal - expensesTotal;
+  const savingsPercent =
+    incomeTotal > 0 ? Math.round((savingsTotal / incomeTotal) * 100) : 0;
 
-  options = { ...defaultOptions, ...options };
+  function formatMoney(num) {
+    const sign = num < 0 ? '-' : '';
+    return sign + currencySymbol + Math.abs(num).toFixed(2);
+  }
+  totalsEl.querySelector('[data-field="income"]').textContent =
+    formatMoney(incomeTotal);
+  totalsEl.querySelector('[data-field="expenses"]').textContent =
+    formatMoney(expensesTotal);
+  totalsEl.querySelector('[data-field="savings"]').textContent =
+    `(${savingsPercent}%)  ` + formatMoney(savingsTotal);
+}
+
+function updateMonthCategoriesPanel(el, reports, budget, selectedMonth) {
+  const parentEl = el.querySelector('.overall-section-categories-rows');
+  parentEl.scrollTop = 0;
+  const rowClass = 'overall-section-categories-row';
+  parentEl.querySelectorAll(`.${rowClass}`).forEach((e) => e.remove());
+
+  const isAvg = selectedMonth === undefined || selectedMonth === null;
+  const summary = isAvg
+    ? reports?.summary
+    : reports?.monthly?.[selectedMonth]?.summary;
+  const numMonths = Object.keys(reports?.monthly ?? {}).length;
+
+  if (!summary) {
+    return;
+  }
+  const categories = Object.values(summary)
+    .map((x) => Object.entries(x.categories))
+    .flat()
+    .sort(createCompareTo((e) => e[1], true));
+
+  for (let [name, total] of categories) {
+    if (isAvg) {
+      total = Number((total / numMonths).toFixed(2));
+    }
+    const row = document.createElement('div');
+    row.classList.add(rowClass);
+    const nameEl = document.createElement('div');
+    // TODO convert to titlecase
+    nameEl.textContent = name;
+    row.appendChild(nameEl);
+    const totalEl = document.createElement('div');
+    totalEl.textContent = total;
+    row.appendChild(totalEl);
+    parentEl.appendChild(row);
+  }
+}
+function MonthPanel(el) {
   const appContext = el.closest('x-app-context');
 
   function updateMonth() {
     const selectedMonth = appContext.selectedMonth;
+    const isAvg = selectedMonth === undefined || selectedMonth === null;
     const reports = appContext.reports ?? {};
     const budget = appContext.budget;
-    const transactions =
-      appContext.transactions?.sort(
-        (a, b) => new Date(a.date) - new Date(b.date),
-      ) ?? [];
-
-    console.log({ budget: budget, transactions });
-    // TODO handle when no budget
+    const currencySymbol = appContext.settings.currencySymbol;
+    const transactions = isAvg
+      ? reports.transactions
+      : reports.monthly[selectedMonth].transactions;
+    console.log({ reports });
     if (!budget || (budget?.categories ?? []).length === 0) {
-      console.log('Unable to update panel, no budget data.');
+      console.warn(
+        'Unable to update panel, budget, transactions, reports are required.',
+      );
       return;
     }
-    // TODO handle No transactions
-
-    // const dataRange = el.getAttribute("data-range");
-    let startYearMonth = null;
-    let endYearMonth = null;
-    if (selectedMonth === null || selectedMonth === undefined) {
-      // default to avg of all data
-      const dates = transactions.map((t) => t.date);
-      startYearMonth = dates.at(0).slice(0, 7);
-      endYearMonth = dates.at(-1).slice(0, 7);
-    } else {
-      startYearMonth = selectedMonth;
-      endYearMonth = selectedMonth;
-    }
-
-    let report = null;
-    if (startYearMonth === endYearMonth) {
-      report = reports[startYearMonth];
-    } else {
-      console.log({ startYearMonth, endYearMonth });
-      const splitStartYearMonth = startYearMonth.split('-');
-      const startDate = new Date(
-        Number(splitStartYearMonth[0]),
-        Number(splitStartYearMonth[1]) - 1,
-        1,
-      );
-      // use zero for day to get last day of prev month
-      const splitEndYearMonth = endYearMonth.split('-');
-      const endDate = new Date(
-        Number(splitEndYearMonth[0]),
-        Number(splitEndYearMonth[1]),
-        0,
-      );
-      console.log({ startDate, endDate });
-      const reportsInRange = Object.values(reports).filter(
-        (r) => r.month >= startYearMonth && r.month <= endYearMonth,
-      );
-      report = {
-        month: 'average',
-        summary: reportsInRange.map((r) => r.summary)[0],
-        /*
-          .reduce((acc, cur) => {
-          	console.log({acc, cur})
-            if (acc === null) {
-              acc = JSON.parse(JSON.stringify(cur));
-              return acc;
-            }
-            // Merge each summary type
-            ["expense", "income", "uncategorized"].forEach((type) => {
-							
-            	if(type in cur && !(type in acc)) {
-             		acc[type] = JSON.parse(JSON.stringify(cur[type]))
-             	} else {
-	              for (const [category, amount] of Object.entries(
-	                cur?.[type]?.categories ?? {},
-	              )) {
-	              	
-	                if (category in acc[type].categories) {
-	                  acc[type].categories[category] += amount;
-	                } else {
-	                  acc[type].categories[category] = amount;
-	                }
-	              }
-             	}
-              return acc;
-            });
-          }, null),
-          */
-        // TODO sort transactions
-        transactions: reportsInRange.map((r) => r.transactions)[0],
-        /*
-        .reduce(
-        	(acc, cur) => {
-        		if (acc === null) {
-        			acc = JSON.parse(JSON.stringify(cur));
-              return acc;
-        		}
-        		for (const [type, transactionsOfType] of Object.entries(cur)) {
-        			if (!(type in acc)){
-        				acc[type] = []
-        			}
-        			acc[type].push(...transactionsOfType)
-        		}
-        		return acc
-        	}, null
-        ),
-        */
-      };
-    }
-    console.log(report);
-    const panelTransactions = Object.values(report.transactions).flat();
-    // // Calculate values for overall total section
-    // const total = panelTransactions
-    //   .map((t) => t.amount)
-    //   .reduce((acc, cur) => acc + cur, 0);
-    const incomeTotal = report.summary?.income?.total ?? 0.0;
-    const expensesTotal = report.summary?.expense?.total ?? 0.0;
-    const savingsTotal = incomeTotal - expensesTotal;
-    const savingsPercent =
-      incomeTotal > 0 ? Math.round((savingsTotal / incomeTotal) * 100) : 0;
-    const totalsEl = el.querySelector('.overall-section-totals');
-    function formatMoney(num) {
-      return '$' + num.toFixed(2);
-    }
-    totalsEl.querySelector('[data-field="income"]').textContent =
-      formatMoney(incomeTotal);
-    totalsEl.querySelector('[data-field="expenses"]').textContent =
-      formatMoney(expensesTotal);
-    totalsEl.querySelector('[data-field="savings"]').textContent =
-      `(${savingsPercent}%) ` + formatMoney(savingsTotal);
+    updateMonthTotalsPanel(
+      el.querySelector('.overall-section-totals'),
+      reports,
+      selectedMonth,
+      currencySymbol,
+    );
+    updateMonthCategoriesPanel(
+      el.querySelector('.overall-section-categories'),
+      reports,
+      budget,
+      selectedMonth,
+    );
   }
-  // appContext.addEventListener('transactionsChange', updateMonth);
+
+  appContext.addEventListener('transactionsChange', updateMonth);
+  appContext.addEventListener('reportsChange', updateMonth);
   appContext.addEventListener('selectedMonthChange', updateMonth);
 }
 
 const app = () => {
   console.log('Loading app');
   registerAppContext();
-
   TransactionsUpload(document.getElementById('file-upload-btn'));
-  TransactionsTable(document.getElementById('transactions-table'));
-  MonthPanel(document.querySelector('.overall-section'));
+  MonthPanel(document.querySelector('.month-sections'));
   MonthSelectorBar(document.querySelector('.month-bar'));
+  TransactionsPanel(document.querySelector('.transactions-section table'));
+
+  // load data from storage and generate reports
+  const appContext = document.querySelector('x-app-context');
+  appContext.loadFromLocalStorage();
+  appContext.refreshReports();
 };
 
 document.addEventListener('DOMContentLoaded', app);

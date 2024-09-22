@@ -1,11 +1,11 @@
-import { generateReports } from '../budget-reporter.js';
+import { generateMonthReports } from '../budget-reporter.js';
+import { mergeDeep } from '../util.js';
 
 const APP_STATE_STORAGE_KEY = 'budget-app-state';
-const DEFAULT_STATE = {
-  transactions: [],
-  budget: {},
-  settings: [],
+const DEFAULT_SETTINGS = {
+  currencySymbol: '$',
 };
+
 class AppContext extends HTMLElement {
   #transactions = [];
   get transactions() {
@@ -24,7 +24,7 @@ class AppContext extends HTMLElement {
     this.#budget = value;
     this.dispatchEvent(new CustomEvent('budgetChange'));
   }
-  #settings = [];
+  #settings = {};
   get settings() {
     return this.#settings;
   }
@@ -38,14 +38,17 @@ class AppContext extends HTMLElement {
     return this.#reports;
   }
   refreshReports() {
-    const overallReport = generateReports(this.#budget, this.#transactions);
-    console.log({ overallReport });
-    this.#reports = overallReport?.monthly.reduce((acc, cur) => {
+    const overallReport = generateMonthReports(
+      this.#budget,
+      this.#transactions,
+    );
+    // turn monthly array into a map
+    overallReport.monthly = overallReport?.monthly.reduce((acc, cur) => {
       acc[cur.month] = cur;
-      console.log({ cur });
       return acc;
     }, {});
-    console.log({ trueReports: this.#reports });
+    // console.log({ overallReport });
+    this.#reports = overallReport;
     this.dispatchEvent(new CustomEvent('reportsChange'));
   }
 
@@ -57,22 +60,26 @@ class AppContext extends HTMLElement {
     this.#selectedMonth = value;
     this.dispatchEvent(new CustomEvent('selectedMonthChange'));
   }
-  connectedCallback() {
-    // TODO find better way to wait for other components to subscribe to app context for initial load
-    setTimeout(() => {
-      const state = {
-        ...DEFAULT_STATE,
-        ...(JSON.parse(localStorage.getItem(APP_STATE_STORAGE_KEY)) ?? '{}'),
-      };
-      console.log('Loading state from local storage');
-      console.log(state);
-      this.transactions = state.transactions;
-      this.budget = state.budget;
-      this.settings = state.settings;
-      this.refreshReports();
-      this.selectedMonth = null;
-    }, 200);
+  contextToString() {
+    return JSON.stringify({
+      budget: this.#budget,
+      transactions: this.#transactions,
+      settings: this.#settings,
+    });
   }
+  contextFromString(value) {
+    const state = JSON.parse(value) ?? {};
+    this.transactions = state.transactions ?? [];
+    this.budget = state.budget ?? {};
+    this.settings = mergeDeep(DEFAULT_SETTINGS, state.settings ?? {});
+    this.selectedMonth = null;
+  }
+  loadFromLocalStorage() {
+    console.log('Loading state from local storage');
+    const stateStr = localStorage.getItem(APP_STATE_STORAGE_KEY) ?? '{}';
+    this.contextFromString(stateStr);
+  }
+  connectedCallback() {}
   constructor() {
     super();
     this.style.display = 'contents';
