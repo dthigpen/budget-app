@@ -222,7 +222,10 @@ function generateReport(budget, transactions) {
 
     // remove category key from transactions
     transactionsByCategory[categoryName] = categoryTranactions.map(
-      ({ category = null, ...t }) => t,
+      ({
+        // category = null,
+        ...t
+      }) => t,
     );
   }
 
@@ -268,7 +271,8 @@ export function generateMonthReports(budget, allTransactions) {
     };
     report.monthly.push(monthReport);
   }
-  const { summary: overallSummary } = generateReport(budget, allTransactions);
+  const { summary: overallSummary, transactions: overallTransactions } =
+    generateReport(budget, allTransactions);
   const numMonths = monthGroupEntries.length;
   for (const [transactionType, transactionTypeSummary] of Object.entries(
     overallSummary,
@@ -278,6 +282,7 @@ export function generateMonthReports(budget, allTransactions) {
     );
   }
   report.summary = overallSummary;
+  report.transactions = overallTransactions;
 
   return report;
 }

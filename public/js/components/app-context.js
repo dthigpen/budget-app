@@ -1,11 +1,11 @@
 import { generateMonthReports } from '../budget-reporter.js';
+import { mergeDeep } from '../util.js';
 
 const APP_STATE_STORAGE_KEY = 'budget-app-state';
-const DEFAULT_STATE = {
-  transactions: [],
-  budget: {},
-  settings: [],
+const DEFAULT_SETTINGS = {
+  currencySymbol: '$',
 };
+
 class AppContext extends HTMLElement {
   #transactions = [];
   get transactions() {
@@ -24,7 +24,7 @@ class AppContext extends HTMLElement {
     this.#budget = value;
     this.dispatchEvent(new CustomEvent('budgetChange'));
   }
-  #settings = [];
+  #settings = {};
   get settings() {
     return this.#settings;
   }
@@ -60,17 +60,24 @@ class AppContext extends HTMLElement {
     this.#selectedMonth = value;
     this.dispatchEvent(new CustomEvent('selectedMonthChange'));
   }
-
-  loadFromLocalStorage() {
-    const state = {
-      ...DEFAULT_STATE,
-      ...(JSON.parse(localStorage.getItem(APP_STATE_STORAGE_KEY)) ?? '{}'),
-    };
-    console.log('Loading state from local storage');
-    this.transactions = state.transactions;
-    this.budget = state.budget;
-    this.settings = state.settings;
+  contextToString() {
+    return JSON.stringify({
+      budget: this.#budget,
+      transactions: this.#transactions,
+      settings: this.#settings,
+    });
+  }
+  contextFromString(value) {
+    const state = JSON.parse(value) ?? {};
+    this.transactions = state.transactions ?? [];
+    this.budget = state.budget ?? {};
+    this.settings = mergeDeep(DEFAULT_SETTINGS, state.settings ?? {});
     this.selectedMonth = null;
+  }
+  loadFromLocalStorage() {
+    console.log('Loading state from local storage');
+    const stateStr = localStorage.getItem(APP_STATE_STORAGE_KEY) ?? '{}';
+    this.contextFromString(stateStr);
   }
   connectedCallback() {}
   constructor() {

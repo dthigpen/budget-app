@@ -17,8 +17,13 @@ function generateTransactions() {
   const startYear = now.getFullYear();
   const startMonth = now.getMonth() + 1;
   const transactions = [];
-
-  const descriptions = [
+  const incomeDescriptions = [
+    'JOB XYZ',
+    'UBER DRIVER',
+    'CARD REWARDS',
+    'INTEREST EARNED',
+  ];
+  const expenseDescriptions = [
     'WAL-MART #123',
     'WAL-MART #456',
     'AMAZON.COM A7878FS',
@@ -29,23 +34,42 @@ function generateTransactions() {
     'ENERGY COMPANY',
     'CITY WATER BILL',
     'COMCAST INTERNET',
-    'JOB XYZ',
-    'UBER DRIVER',
   ];
-  const accounts = [
+
+  const incomeAccounts = ['Chase Checking', 'Wells Fargo Checking'];
+  const expenseAccounts = [
     'Chase Credit Card',
     'Chase Debit Card',
     'Wells Fargo Checking',
   ];
   for (let i = 0, yr = startYear, mo = startMonth; i < numMonths; i++) {
     const yearMonth = `${String(yr).padStart(4, '0')}-${String(mo).padStart(2, '0')}`;
-    const numTransactions = getRandomInt(3, 25);
-    for (let j = 0; j < numTransactions; j++) {
+    const numIncome = getRandomInt(1, 3);
+    const numExpense = getRandomInt(10, 25);
+
+    // generate income transactions
+    for (let j = 0; j < numIncome; j++) {
+      const dayNum = getRandomInt(1, 29);
+      // generate large amount for first two income description or small for rest
+      const amount =
+        j <= 1
+          ? Number(getRandomInt(300000, 400000) / 100)
+          : Number(getRandomInt(5, 5999) / 100);
+      const transaction = {
+        date: `${yearMonth}-${String(dayNum).padStart(2, '0')}`,
+        description: incomeDescriptions[j],
+        account: incomeAccounts[getRandomInt(0, incomeAccounts.length - 1)],
+        amount: amount,
+      };
+      transactions.push(transaction);
+    }
+    for (let j = 0; j < numExpense; j++) {
       const dayNum = getRandomInt(1, 29);
       const transaction = {
         date: `${yearMonth}-${String(dayNum).padStart(2, '0')}`,
-        description: descriptions[getRandomInt(0, descriptions.length - 1)],
-        account: accounts[getRandomInt(0, accounts.length - 1)],
+        description:
+          expenseDescriptions[getRandomInt(0, expenseDescriptions.length - 1)],
+        account: expenseAccounts[getRandomInt(0, expenseAccounts.length - 1)],
         amount: Number(getRandomInt(1000, 29599) / 100),
       };
       transactions.push(transaction);
