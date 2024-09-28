@@ -35,30 +35,51 @@
             <button>Average</button>
           </div>
           <div class="overall-section box">
-            <div class="overall-section-totals box">
-              <h3 class="overall-section-totals-title">Overall</h3>
-              <div class="overall-section-totals-row box">
-                <div>Income</div>
-                <div data-field="income">$0.00</div>
+            <article class="overall-section-totals box">
+              <header><h3>Overall</h3></header>
+              <div class="overall-section-totals-list">
+                <div class="overall-section-totals-item box">
+                  <div>Income</div>
+                  <div data-field="income">$0.00</div>
+                </div>
+                <div class="overall-section-totals-item box">
+                  <div>Expenses</div>
+                  <div data-field="expenses">$0.00</div>
+                </div>
+                <div class="overall-section-totals-item box">
+                  <div>Savings</div>
+                  <div data-field="savings">(0%) $0.00</div>
+                </div>
               </div>
-              <div class="overall-section-totals-row box">
-                <div>Expenses</div>
-                <div data-field="expenses">$0.00</div>
+            </article>
+            <article class="top-categories">
+              <header><h3>Top Categories</h3></header>
+              <div class="top-categories-list">
+                <div class="top-categories-item">
+                  <div class="spread">
+                    <div class="category">Rent</div>
+                    <div>
+                      <span class="spent">1267.95</span> /
+                      <span class="goal">1267.95</span>
+                    </div>
+                  </div>
+                  <progress class="over" value="1268" max="1268" />
+                </div>
               </div>
-              <div class="overall-section-totals-row box">
-                <div>Savings</div>
-                <div data-field="savings">(0%) $0.00</div>
-              </div>
-            </div>
-            <div class="overall-section-categories box">
-              <h3 class="overall-section-categories-title">Top Categories</h3>
-
-              <div class="overall-section-categories-rows box">
-                <div class="overall-section-categories-row box"></div>
-              </div>
-            </div>
+              <footer>
+                <button class="outline secondary">All Categories</button>
+              </footer>
+            </article>
+            <!--             <div class="overall-section-categories box"> -->
+            <!--               <h3 class="overall-section-categories-title">Top Categories</h3> -->
+            <!--  -->
+            <!--               <div class="overall-section-categories-rows box"> -->
+            <!--                 <div class="overall-section-categories-row box"></div> -->
+            <!--               </div> -->
+            <!--             </div> -->
           </div>
-          <div class="transactions-section box">
+          <article class="transactions-section box">
+          <header>
             <div class="transactions-section-bar">
               <h3 class="box">Transactions</h3>
               <div>
@@ -69,6 +90,7 @@
                 </div>
               </div>
             </div>
+           </header>
             <div class="overflow-auto">
               <table id="transactions-table">
                 <thead>
@@ -84,7 +106,7 @@
                 <tbody></tbody>
               </table>
             </div>
-          </div>
+          </article>
         </div>
       </x-app-context>
       <script type="module" src="./js/index.js"></script>

@@ -98,6 +98,7 @@ function generateBudget() {
       },
       {
         name: 'Groceries',
+        goal: 1000,
         includes: [
           {
             description: 'WAL-MART|COSTCO',
@@ -106,6 +107,7 @@ function generateBudget() {
       },
       {
         name: 'Entertainment',
+        goal: 150,
         includes: [
           {
             description: 'THEATER',
@@ -114,6 +116,7 @@ function generateBudget() {
       },
       {
         name: 'Household',
+        goal: 200,
         includes: [
           {
             description: 'HOME DEPOT',
