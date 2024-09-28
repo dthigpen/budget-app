@@ -44,7 +44,7 @@ nav {
 }
 
 .overall-section-totals > header {
-	text-align: center
+  text-align: center;
 }
 
 .overall-section-totals > .overall-section-totals-list {
@@ -58,28 +58,6 @@ nav {
 
 .overall-section-totals-item {
 }
-
-/* .overall-section-categories { */
-/*   flex-grow: 3; */
-/*   padding: 0.1rem 0.2rem; */
-/* } */
-
-/* .overall-section-categories-title { */
-/*   text-align: center; */
-/* } */
-/*  */
-/* .overall-section-categories-rows { */
-/*   display: flex; */
-/*   flex-direction: column; */
-/*   justify-content: start; */
-/*   max-height: 8rem; */
-/*   overflow-y: auto; */
-/* } */
-/* .overall-section-categories-row { */
-/*   display: flex; */
-/*   flex-wrap: wrap; */
-/*   justify-content: space-between; */
-/* } */
 
 .transactions-section {
   display: flex;
@@ -103,7 +81,7 @@ nav {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .top-categories {
