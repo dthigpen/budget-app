@@ -1,16 +1,16 @@
-function sum(...arr) {
-  return arr.reduce((a, b) => a + b, 0);
-}
-export function categorizeTransactions(budget, allTransactions) {
-  // for each transaction
-  //   assign to a category
-  // treat remaining as uncategorized
-  // handle actions
-  const actions = budget.actions ?? [];
-  const preCategorizationActions = actions.filter(
-    (a) => a.type === 'split' || a.type === 'replace',
+import { groupBy, sum } from './util.js';
+
+const PRE_ACTION_TYPES = ['split', 'replace'];
+const POST_ACTION_TYPES = ['hide'];
+
+function splitActions(actions) {
+  actions = actions ?? [];
+  const preCategorizationActions = actions.filter((a) =>
+    PRE_ACTION_TYPES.includes(a.type),
   );
-  const postCategorizationActions = actions.filter((a) => a.type === 'hide');
+  const postCategorizationActions = actions.filter((a) =>
+    POST_ACTION_TYPES.includes(a.type),
+  );
   const unhandledActions = actions.filter(
     (a) =>
       !preCategorizationActions.includes(a) &&
@@ -22,6 +22,10 @@ export function categorizeTransactions(budget, allTransactions) {
     );
     throw Error(`Invalid action: ${JSON.stringify(a)}`);
   }
+  return [preCategorizationActions, postCategorizationActions];
+}
+export function applyPrecategorizationActions(budget, allTransactions) {
+  const [preCategorizationActions] = splitActions(budget.actions ?? []);
 
   // handle pre categorization actions
   const removedTransactions = [];
@@ -141,22 +145,27 @@ export function categorizeTransactions(budget, allTransactions) {
     return dateStringCompareTo(t1.date, t2.date);
   });
 
-  // categorize transactions
-  for (const transaction of preprocessedTransactions.filter(
-    (t) => t.category === undefined || t.category === null,
-  )) {
-    let foundCategory = false;
-    for (const category of budget.categories) {
-      if (transactionMatchesCategory(transaction, category)) {
-        foundCategory = true;
-        transaction.category = category.name;
+  return preprocessedTransactions;
+}
+export function categorizeTransactions(budgetCategories, allTransactions) {
+  // skips the transaction if it already has a category
+  // returns new array of transactions each with their category
+  return allTransactions.map(({ category = null, ...transaction }) => {
+    if (category === undefined || category === null) {
+      for (const budgetCategory of budgetCategories) {
+        if (transactionMatchesCategory(transaction, budgetCategory)) {
+          category = budgetCategory.name;
+          break;
+        }
       }
     }
-    if (!foundCategory) {
-      transaction.category = 'uncategorized';
-    }
-  }
+    category ??= 'uncategorized';
+    return { category, ...transaction };
+  });
+}
 
+export function applyPostCategorizationAction(budget, allTransactions) {
+  const [, postCategorizationActions] = splitActions(budget.actions ?? []);
   // handle post categorization actions
   const hiddenTransactions = [];
   for (const action of postCategorizationActions) {
@@ -168,12 +177,10 @@ export function categorizeTransactions(budget, allTransactions) {
       const dummyCategory = { name: 'hidden', includes, excludes };
       const matchingTransactions = [];
       matchingTransactions.push(
-        ...preprocessedTransactions.filter((t) =>
-          categoriesToHide.includes(t.category),
-        ),
+        ...allTransactions.filter((t) => categoriesToHide.includes(t.category)),
       );
       matchingTransactions.push(
-        ...preprocessedTransactions.filter((t) =>
+        ...allTransactions.filter((t) =>
           transactionMatchesCategory(t, dummyCategory),
         ),
       );
@@ -182,12 +189,27 @@ export function categorizeTransactions(budget, allTransactions) {
   }
 
   const transactionsAfterPostActions = [
-    ...preprocessedTransactions.filter((t) => !hiddenTransactions.includes(t)),
+    ...allTransactions.filter((t) => !hiddenTransactions.includes(t)),
   ];
   return transactionsAfterPostActions;
 }
 
-function generateReport(budget, transactions) {
+export function processAndCategorizeTransactions(budget, allTransactions) {
+  const preprocessedTransactions = applyPrecategorizationActions(
+    budget,
+    allTransactions,
+  );
+  const transactions = categorizeTransactions(
+    budget?.categories ?? [],
+    preprocessedTransactions,
+  );
+  const postprocessedTranactions = applyPostCategorizationAction(
+    budget,
+    transactions,
+  );
+  return postprocessedTranactions;
+}
+export function generateReport(budget, transactions) {
   const summary = {};
   const transactionsByType = {}; // by income,expense,unrecognized
   // Group month transactions by category
@@ -242,7 +264,7 @@ export function generateMonthReports(budget, allTransactions) {
   // generate report data
   //   category monthly averages
   //   uncategorized transactions without data field
-  const categorizedTransactions = categorizeTransactions(
+  const categorizedTransactions = processAndCategorizeTransactions(
     budget,
     allTransactions,
   );
@@ -334,31 +356,4 @@ function dateStringCompareTo(s1, s2) {
   } else {
     return 0;
   }
-}
-
-/**
- * @description
- * Takes an Array<V>, and a grouping function,
- * and returns a Map of the array grouped by the grouping function.
- *
- * @param list An array of type V.
- * @param keyGetter A Function that takes the the Array type V as an input, and returns a value of type K.
- *                  K is generally intended to be a property key of V.
- *
- * @returns Map of the array grouped by the grouping function.
- */
-//export function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
-//    const map = new Map<K, Array<V>>();
-function groupBy(list, keyGetter) {
-  const map = new Map();
-  list.forEach((item) => {
-    const key = keyGetter(item);
-    const collection = map.get(key);
-    if (!collection) {
-      map.set(key, [item]);
-    } else {
-      collection.push(item);
-    }
-  });
-  return Object.fromEntries(map);
 }

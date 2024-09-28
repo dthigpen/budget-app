@@ -1,5 +1,8 @@
-import { generateMonthReports } from '../budget-reporter.js';
-import { mergeDeep } from '../util.js';
+import {
+  generateMonthReports,
+  categorizeTransactions,
+} from '../budget-reporter.js';
+import { mergeDeep, createCompareTo } from '../util.js';
 
 const APP_STATE_STORAGE_KEY = 'budget-app-state';
 const DEFAULT_SETTINGS = {
@@ -9,7 +12,7 @@ const DEFAULT_SETTINGS = {
 class AppContext extends HTMLElement {
   #transactions = [];
   get transactions() {
-    return this.#transactions;
+    return this.#transactions.sort(createCompareTo((t) => t.date, false));
   }
   set transactions(value) {
     this.#transactions = value;
@@ -36,6 +39,20 @@ class AppContext extends HTMLElement {
   #reports = {};
   get reports() {
     return this.#reports;
+  }
+
+  get periodTransactions() {
+    return (
+      (!this.#selectedMonth
+        ? this.#transactions
+        : this.#transactions.filter((t) =>
+            t.date.startsWith(this.#selectedMonth),
+          )) ?? []
+    );
+  }
+
+  categorizeTransactions() {
+    return categorizeTransactions(this.#budget, this.#transactions);
   }
   refreshReports() {
     const overallReport = generateMonthReports(
