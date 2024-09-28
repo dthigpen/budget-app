@@ -39,9 +39,6 @@ function MonthSelectorBar(monthContainerEl) {
       }
       btnEl.remove();
     });
-    if (!appContext.reports) {
-      return;
-    }
 
     function setupBtn(e, onClick) {
       e.addEventListener('click', () => {
@@ -54,6 +51,7 @@ function MonthSelectorBar(monthContainerEl) {
         }
       });
     }
+    const transactions = appContext.transactions ?? [];
     // Setup Average btn
     const avgBtn = document.createElement('button');
     setupBtn(avgBtn, () => {
@@ -64,25 +62,26 @@ function MonthSelectorBar(monthContainerEl) {
       avgBtn.classList.add('outline');
     }
     monthContainerEl.appendChild(avgBtn);
+
     // Setup month buttons
-    const sortedReports = Object.values(appContext.reports.monthly).sort(
-      createCompareTo((r) => r.month, true),
-    );
-    for (const report of sortedReports) {
+    const yearMonths = [...new Set(transactions.map((t) => t.date.slice(0, 7)))]
+      .sort()
+      .reverse();
+    for (const yearMonth of yearMonths) {
       const btn = document.createElement('button');
-      const [yr, mo] = report.month.split('-');
+      const [yr, mo] = yearMonth.split('-');
       btn.textContent = `${yr} ${monthNames[mo - 1]}`;
-      btn.setAttribute('data-value', report.month);
-      if (selected !== report.month) {
+      btn.setAttribute('data-value', yearMonth);
+      if (selected !== yearMonth) {
         btn.classList.add('outline');
       }
       setupBtn(btn, () => {
-        appContext.selectedMonth = report.month;
+        appContext.selectedMonth = yearMonth;
       });
       monthContainerEl.appendChild(btn);
     }
   }
-  appContext.addEventListener('reportsChange', updateMonthButtons);
+  appContext.addEventListener('transactionsChange', updateMonthButtons);
 }
 function TransactionsPanel(tableEl) {
   const appContext = tableEl.closest('x-app-context');
@@ -176,7 +175,6 @@ function MonthTotalsPanel(totalsEl) {
         acc[categoryType] += categoryAmount;
         return acc;
       }, {});
-    console.log({ categoryTypeTotals });
     const numMonths = Object.values(
       groupBy(categorizedTransactions, (t) => t.date.slice(0, 7)),
     ).length;
@@ -289,156 +287,82 @@ function MonthCategoriesPanel(el) {
       true,
     );
 
-    console.log({ categoryAmounts });
-
     let itemsHtml = '';
-    Object.entries(categoryAmounts).forEach(
-      ([categoryName, categoryAmount]) => {
-        const category =
-          appContext.budget?.categories?.find((c) => c.name === categoryName) ??
-          {};
-        const goal = category.goal;
-        const hasGoal = goal !== undefined && goal !== null;
-        const amounts = hasGoal
-          ? html`
-              <div>
-                <span class="spent">${categoryAmount}</span>
-                <span class="divider"> / </span>
-                <span class="goal">${category.goal}</span>
-              </div>
-            `
-          : html`
-              <div>
-                <span class="spent">${categoryAmount}</span>
-              </div>
-            `;
-        let progStatus = '';
-        if (hasGoal) {
-          if (categoryAmount > goal) {
-            progStatus = 'over';
-          } else if (categoryAmount <= 0.5 * goal) {
-            progStatus = 'low';
-          }
+    const sortedCategoryAmounts = Object.entries(categoryAmounts)
+      .map(([categoryName, categoryAmount]) => {
+        let category = null;
+        if (categoryName === 'uncategorized') {
+          category = { name: 'uncategorized' };
         }
-        itemsHtml += html`
-          <div class="top-categories-item">
-            <div class="spread">
-              <div class="category">${categoryName}</div>
-              ${amounts}
+        category =
+          appContext.budget?.categories?.find((c) => c.name === categoryName) ??
+          null;
+        return [category, categoryAmount];
+      })
+      .filter(([c]) => c !== null && (!c.type || c.type === 'expense'))
+      .sort(
+        createCompareTo(([budgetCategory, categoryAmount]) => {
+          // treat no goal as always being under the goal
+          const goalAmount = budgetCategory.goal ?? Infinity;
+          return categoryAmount - goalAmount;
+        }, true),
+      );
+    sortedCategoryAmounts.forEach(([category, categoryAmount]) => {
+      const goal = category.goal;
+      const hasGoal = goal !== undefined && goal !== null;
+      const amounts = hasGoal
+        ? html`
+            <div>
+              <span class="spent">${categoryAmount}</span>
+              <span class="divider"> / </span>
+              <span class="goal">${category.goal}</span>
             </div>
-            <progress
-              class="${progStatus}"
-              value="${Math.round(categoryAmount)}"
-              max="${Math.round(hasGoal ? category.goal : categoryAmount)}"
-            />
+          `
+        : html`
+            <div>
+              <span class="spent">${categoryAmount}</span>
+            </div>
+          `;
+      let progStatus = '';
+      if (hasGoal) {
+        if (categoryAmount > goal) {
+          progStatus = 'over';
+        } else if (categoryAmount <= 0.5 * goal) {
+          progStatus = 'low';
+        }
+      }
+      itemsHtml += html`
+        <div class="top-categories-item">
+          <div class="spread">
+            <div class="category">${category.name}</div>
+            ${amounts}
           </div>
-        `;
-      },
-    );
+          <progress
+            class="${progStatus}"
+            value="${Math.round(categoryAmount)}"
+            max="${Math.round(hasGoal ? category.goal : categoryAmount)}"
+          />
+        </div>
+      `;
+    });
     topCategoriesList.innerHTML = itemsHtml;
   }
-  /*
-  const categoryTotals = Object.values(summary)
-    .map((x) => Object.entries(x.categories))
-    .flat()
-    .sort(createCompareTo((e) => e[1], true));
 
-  let childrenHtml = '';
-  for (let [name, total] of categoryTotals) {
-    if (isAvg) {
-      total = Number((total / numMonths).toFixed(2));
-    }
-    const hasGoal = false;
-    const amounts = hasGoal
-      ? html`
-          <div>
-            <span class="spent">${total}</span>
-            <span class="divider"> / </span>
-            <span class="goal">${total}</span>
-          </div>
-        `
-      : html`
-          <div>
-            <span class="spent">${total}</span>
-          </div>
-        `;
-    let progStatus = '';
-    if (hasGoal) {
-      if (total > goal) {
-        progStatus = 'over';
-      } else if (total <= 0.25 * goal) {
-        progStatus = 'low';
-      }
-    }
-
-    const row = html`
-      <div class="top-categories-item">
-        <div class="spread">
-          <div class="category">${name}</div>
-          ${amounts}
-        </div>
-        <progress
-          class="${progStatus}"
-          value="${Math.round(total)}"
-          max="${Math.round(total)}"
-        />
-      </div>
-    `;
-    childrenHtml += row;
-  }
-  parentEl.innerHTML = childrenHtml;
-  */
   appContext.addEventListener('transactionsChange', updateTopCategories);
   appContext.addEventListener('budgetChange', updateTopCategories);
   appContext.addEventListener('selectedMonthChange', updateTopCategories);
 }
-function MonthPanel(el) {
-  const appContext = el.closest('x-app-context');
-
-  function updateMonth() {
-    const selectedMonth = appContext.selectedMonth;
-    const isAvg = selectedMonth === undefined || selectedMonth === null;
-    const reports = appContext.reports ?? {};
-    const budget = appContext.budget;
-    const currencySymbol = appContext.settings.currencySymbol;
-    const transactions = isAvg
-      ? reports.transactions
-      : reports.monthly[selectedMonth].transactions;
-    console.log({ reports });
-    if (!budget || (budget?.categories ?? []).length === 0) {
-      console.warn(
-        'Unable to update panel, budget, transactions, reports are required.',
-      );
-      return;
-    }
-    // updateMonthTotalsPanel(
-    //   el.querySelector('.overall-section-totals'),
-    //   reports,
-    //   selectedMonth,
-    //   currencySymbol,
-    // );
-    // updateMonthCategoriesPanel(
-    //   el.querySelector('.top-categories'),
-    //   reports,
-    //   budget,
-    //   selectedMonth,
-    // );
-  }
-
-  appContext.addEventListener('transactionsChange', updateMonth);
-  appContext.addEventListener('reportsChange', updateMonth);
-  appContext.addEventListener('selectedMonthChange', updateMonth);
-}
 
 const app = () => {
   console.log('Loading app');
+  // register custom elements
   registerAppContext();
-  TransactionsUpload(document.getElementById('file-upload-btn'));
-  MonthPanel(document.querySelector('.month-sections'));
+  // Setup mount function components
   MonthSelectorBar(document.querySelector('.month-bar'));
-  TransactionsPanel(document.querySelector('.transactions-section table'));
-  MonthCategoriesPanel(document.querySelector('.top-categories'));
   MonthTotalsPanel(document.querySelector('.overall-section-totals'));
+  MonthCategoriesPanel(document.querySelector('.top-categories'));
+  TransactionsPanel(document.querySelector('.transactions-section table'));
+  TransactionsUpload(document.getElementById('file-upload-btn'));
   // load data from storage and generate reports
   const appContext = document.querySelector('x-app-context');
   appContext.loadFromLocalStorage();
