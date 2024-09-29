@@ -83,6 +83,146 @@ function MonthSelectorBar(monthContainerEl) {
   }
   appContext.addEventListener('transactionsChange', updateMonthButtons);
 }
+
+function MonthPicker(monthPickerEl) {
+  const appContext = monthPickerEl.closest('x-app-context');
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  const searchEl = monthPickerEl.querySelector('.search');
+  searchEl.addEventListener('keyup', () => {
+    console.log(searchEl.value);
+    monthPickerEl.querySelectorAll('button').forEach((btnEl) => {
+      if (
+        btnEl.textContent.toLowerCase().includes(searchEl.value.toLowerCase())
+      ) {
+        btnEl.classList.remove('-gone');
+      } else {
+        btnEl.classList.add('-gone');
+      }
+    });
+  });
+  function updateMonthButtons() {
+    const now = new Date();
+
+    const curMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    // const curMonthYear = `${now.getFullYear()} ${monthNames[now.getMonth()]}`
+    const startOn = curMonthYear; // could also be Average
+    // Remove old buttons
+    monthPickerEl.querySelectorAll('button').forEach((btnEl) => {
+      if (!btnEl.classList.contains('outline')) {
+        selected = btnEl.getAttribute('data-value');
+      }
+      btnEl.remove();
+    });
+
+    // container for buttons
+    const resultsEl = monthPickerEl.querySelector('.results');
+
+    function yearMonthToText(yearMonth) {
+      const [yr, mo] = yearMonth.split('-');
+      return `${yr} ${monthNames[Number(mo) - 1]}`;
+    }
+    function setupBtn(e, text, dataValue, onClick) {
+      // unselected state will be only outline
+      e.classList.add('outline');
+      e.textContent = text;
+      if (dataValue) {
+        e.setAttribute('data-value', dataValue);
+      }
+      // create summary text from data value or text
+      let summaryText = 'Select a Month';
+      if (dataValue && dataValue !== 'average') {
+        const [yr, mo] = dataValue.split('-');
+        // e.g. 2024 September
+        summaryText = `${yr} ${monthNames[Number(mo) - 1]}`;
+      } else {
+        summaryText = text;
+      }
+      e.addEventListener('click', () => {
+        // update summary text
+        monthPickerEl.querySelector('summary').textContent = summaryText;
+        // update highlighted button
+        [...monthPickerEl.querySelectorAll('button')]
+          .filter((b) => b !== e)
+          .forEach((b) => b.classList.add('outline'));
+        e.classList.remove('outline');
+        monthPickerEl.removeAttribute('open');
+        // run onClick
+        if (onClick) {
+          onClick(e);
+        }
+      });
+      return e;
+    }
+    const transactions = appContext.transactions ?? [];
+    // Setup Average btn
+    const avgBtn = document.createElement('button');
+    setupBtn(avgBtn, 'Average', null, () => {
+      appContext.selectedMonth = null;
+    });
+    resultsEl.appendChild(avgBtn);
+
+    const curMonthBtn = document.createElement('button');
+    setupBtn(curMonthBtn, 'Current Month', curMonthYear, () => {
+      appContext.selectedMonth = curMonthYear;
+    });
+    resultsEl.appendChild(curMonthBtn);
+
+    // Setup month buttons
+    const yearMonths = [...new Set(transactions.map((t) => t.date.slice(0, 7)))]
+      .sort()
+      .reverse();
+    for (const yearMonth of yearMonths) {
+      console.log(yearMonth, curMonthYear);
+      if (yearMonth === curMonthYear) {
+        console.log('continue');
+        continue;
+      }
+      const btn = document.createElement('button');
+      // const [yr, mo] = yearMonth.split('-');
+      // btn.textContent = `${yr} ${monthNames[Number(mo) - 1]}`;
+      // btn.setAttribute('data-value', yearMonth);
+      setupBtn(btn, yearMonthToText(yearMonth), yearMonth, () => {
+        appContext.selectedMonth = yearMonth;
+      });
+      resultsEl.appendChild(btn);
+    }
+
+    // Initial month selection
+    const monthElToSelect = resultsEl.querySelector(
+      `button[data-value="${startOn}"]`,
+    );
+    if (monthElToSelect) {
+      monthElToSelect.classList.remove('outline');
+      monthElToSelect.click();
+    } else {
+      const el = resultsEl.querySelector(`button`);
+      monthElToSelect.click();
+    }
+    monthPickerEl.querySelectorAll('button').forEach((button) => {
+      if (
+        button.textContent.toLowerCase().includes(searchEl.value.toLowerCase())
+      ) {
+        button.classList.remove('-gone');
+      } else {
+        button.classList.add('-gone');
+      }
+    });
+  }
+  appContext.addEventListener('transactionsChange', updateMonthButtons);
+}
 function TransactionsPanel(tableEl) {
   const appContext = tableEl.closest('x-app-context');
 
@@ -359,6 +499,7 @@ const app = () => {
   registerAppContext();
   // Setup mount function components
   MonthSelectorBar(document.querySelector('.month-bar'));
+  MonthPicker(document.querySelector('.month-picker'));
   MonthTotalsPanel(document.querySelector('.overall-section-totals'));
   MonthCategoriesPanel(document.querySelector('.top-categories'));
   TransactionsPanel(document.querySelector('.transactions-section table'));
