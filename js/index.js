@@ -115,8 +115,11 @@ function MonthPicker(monthPickerEl) {
       }
     });
   }
+  monthPickerEl.querySelector('summary').textContent = 'Select a month';
+
   searchEl.addEventListener('keyup', applySearchFilter);
   function updateMonthButtons() {
+  	monthPickerEl.querySelector('summary').textContent = 'Select a month';
     const now = new Date();
 
     const curMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -188,15 +191,10 @@ function MonthPicker(monthPickerEl) {
       .sort()
       .reverse();
     for (const yearMonth of yearMonths) {
-      console.log(yearMonth, curMonthYear);
       if (yearMonth === curMonthYear) {
-        console.log('continue');
         continue;
       }
       const btn = document.createElement('button');
-      // const [yr, mo] = yearMonth.split('-');
-      // btn.textContent = `${yr} ${monthNames[Number(mo) - 1]}`;
-      // btn.setAttribute('data-value', yearMonth);
       setupBtn(btn, yearMonthToText(yearMonth), yearMonth, () => {
         appContext.selectedMonth = yearMonth;
       });
@@ -204,16 +202,8 @@ function MonthPicker(monthPickerEl) {
     }
 
     // Initial month selection
-    const monthElToSelect = resultsEl.querySelector(
-      `button[data-value="${startOn}"]`,
-    );
-    if (monthElToSelect) {
-      monthElToSelect.classList.remove('outline');
-      monthElToSelect.click();
-    } else {
-      const el = resultsEl.querySelector(`button`);
-      monthElToSelect.click();
-    }
+    const selectedEl = resultsEl.querySelector(`button[data-value="${startOn}"]`) ?? resultsEl.querySelector(`button`)
+     setTimeout(()=>selectedEl?.click(),1);
     applySearchFilter()
   }
   appContext.addEventListener('transactionsChange', updateMonthButtons);
