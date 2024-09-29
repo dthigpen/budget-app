@@ -101,18 +101,21 @@ function MonthPicker(monthPickerEl) {
     'December',
   ];
   const searchEl = monthPickerEl.querySelector('.search');
-  searchEl.addEventListener('keyup', () => {
-    console.log(searchEl.value);
+
+  function applySearchFilter() {
     monthPickerEl.querySelectorAll('button').forEach((btnEl) => {
+    	const searchString = searchEl.value.trim()
       if (
-        btnEl.textContent.toLowerCase().includes(searchEl.value.toLowerCase())
+      	searchString === '' || 
+        btnEl.textContent.toLowerCase().includes(searchString)
       ) {
         btnEl.classList.remove('-gone');
       } else {
         btnEl.classList.add('-gone');
       }
     });
-  });
+  }
+  searchEl.addEventListener('keyup', applySearchFilter);
   function updateMonthButtons() {
     const now = new Date();
 
@@ -211,15 +214,7 @@ function MonthPicker(monthPickerEl) {
       const el = resultsEl.querySelector(`button`);
       monthElToSelect.click();
     }
-    monthPickerEl.querySelectorAll('button').forEach((button) => {
-      if (
-        button.textContent.toLowerCase().includes(searchEl.value.toLowerCase())
-      ) {
-        button.classList.remove('-gone');
-      } else {
-        button.classList.add('-gone');
-      }
-    });
+    applySearchFilter()
   }
   appContext.addEventListener('transactionsChange', updateMonthButtons);
 }
@@ -498,7 +493,7 @@ const app = () => {
   // register custom elements
   registerAppContext();
   // Setup mount function components
-  MonthSelectorBar(document.querySelector('.month-bar'));
+  // MonthSelectorBar(document.querySelector('.month-bar'));
   MonthPicker(document.querySelector('.month-picker'));
   MonthTotalsPanel(document.querySelector('.overall-section-totals'));
   MonthCategoriesPanel(document.querySelector('.top-categories'));
