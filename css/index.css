@@ -242,10 +242,22 @@ article > header > * {
 }
 .categories-section > .filters {
   display: flex;
-  justify-content: start;
-  flex-wrap: wrap;
+  flex-direction: column;
+  /* justify-content: start; */
+  /* flex-wrap: wrap; */
   gap: 0.5rem;
 }
+
+.scroll-x {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  justify-content: start;
+}
+.scroll-x > * {
+  flex-shrink: 0;
+}
+
 .categories-section .-gone {
   display: none;
 }
