@@ -236,24 +236,25 @@ article > header > * {
 }
 
 .categories-section {
-	display: flex;
-	flex-direction: column;
-	gap: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 .categories-section > .filters {
-	display: flex;
-	justify-content: start;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-	
+  display: flex;
+  justify-content: start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.categories-section .-gone {
+  display: none;
 }
 
-.categories-section > .filters > [role="group"] {
-/* Without max-width groups take up full width */
-	max-width: 10rem;
-	margin: 0;
+.categories-section > .filters > [role='group'] {
+  /* Without max-width groups take up full width */
+  /* max-width: 20rem; */
+  margin: 0;
 }
 button.small {
-	  padding: 0.3rem 0.4rem;
+  padding: 0.3rem 0.4rem;
 }
-
