@@ -6,10 +6,12 @@ Currently this project is an experiment to simplify the web stack, taking inspir
 
 ## Features
 
-- Automatic transaction categorization
-- Monthly and average spending breakdown
+- Configurable, automatic transaction categorization
+- No third-party bank access
 - Plain-text budget format to reduce platform lock-in
-- Budget goals (planned)
+- Monthly and average spending breakdown
+- Budget goals
+- Chart view of spending breakdown (planned, below overall stats)
 - Batch import of transactions in CSV or JSON format (planned)
 - Transaction, budget, report export (planned)
 - PWA (Progressive Web App) support for offline usage (planned)

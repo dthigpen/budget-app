@@ -11,6 +11,16 @@ import { html } from './html.js';
 // Generate test data and save to local storage
 generateTestData();
 
+const CategoryType = {
+  EXPENSE: 'expense',
+  INCOME: 'income',
+};
+
+const GoalFilters = {
+  ALL: 'all',
+  OVERBUDGET: 'overbudget',
+  ON_TRACK: 'ontrack',
+};
 // Mount functions
 
 function MonthSelectorBar(monthContainerEl) {
@@ -132,7 +142,6 @@ function MonthPicker(monthPickerEl) {
   );
   summaryEl.innerHTML = '';
   summaryEl.appendChild(summaryTextNode);
-  console.log({ actual: summaryEl.textContent, cur: getCurrentYearMonth() });
   // On search input, filter results
   searchEl.addEventListener('keyup', applySearchFilter);
 
@@ -208,11 +217,6 @@ function MonthPicker(monthPickerEl) {
     }
     applySearchFilter();
   }
-  // Initial month selection
-  // const selectedEl = resultsEl.querySelector(`button[data-value="${getCurrentYearMonth()}"]`) ?? resultsEl.querySelector(`button`)
-  //  setTimeout(()=>selectedEl?.click(),1);
-  //  console.log(selectedEl)
-  // applySearchFilter()
 
   appContext.addEventListener('transactionsChange', updateMonthButtons);
 }
@@ -392,11 +396,74 @@ function calculateCategoryAmounts(categorizedTransactions, monthAvg = false) {
   return categoryAmounts;
 }
 
+function isButtonSelected(btnEl) {
+  return !btnEl.classList.contains('outline');
+}
+
+function selectButton(btnEl) {
+  btnEl.classList.remove('outline');
+  btnEl.classList.add('selected');
+}
+
+function unselectButton(btnEl) {
+  btnEl.classList.add('outline');
+  btnEl.classList.remove('selected');
+}
+
+function displayElement(el, display = true) {
+  if (display) {
+    el.classList.remove('-gone');
+  } else {
+    el.classList.add('-gone');
+  }
+}
 function MonthCategoriesPanel(el) {
   const appContext = el.closest('x-app-context');
+  const categoryFiltersContainer = el.querySelector(
+    '.categories-section .filters',
+  );
+  // const incomeExpensesButtons = categoryFiltersContainer.querySelectorAll('.types button');
+  const incomeFilterBtn = categoryFiltersContainer.querySelector(
+    'button[data-value="income"]',
+  );
+  const expenseFilterBtn = categoryFiltersContainer.querySelector(
+    'button[data-value="expense"]',
+  );
+
+  const categoryTypeFilterBtns = [incomeFilterBtn, expenseFilterBtn];
+
+  const allFilterBtn = categoryFiltersContainer.querySelector(
+    'button[data-value="all"]',
+  );
+  const overbudgetFilterBtn = categoryFiltersContainer.querySelector(
+    'button[data-value="overbudget"]',
+  );
+  const onTrackFilterBtn = categoryFiltersContainer.querySelector(
+    'button[data-value="ontrack"]',
+  );
+  const categoryGoalFilterBtns = [
+    allFilterBtn,
+    overbudgetFilterBtn,
+    onTrackFilterBtn,
+  ];
 
   function updateTopCategories() {
-    const topCategoriesList = el.querySelector('.top-categories-list');
+    // TODO remove add filter buttons if apply to current categories
+    // e.g. only add overbudget filter if there are overbudget categories
+
+    const topCategoriesList = el.querySelector(
+      '.categories-section .top-categories-list',
+    );
+    // category type is income or expense
+    const selectedCategoryType =
+      categoryFiltersContainer
+        .querySelector('.types button.selected')
+        ?.getAttribute('data-value') ?? 'expense';
+
+    const selectedGoalFilter =
+      categoryGoalFilterBtns
+        .find((b) => isButtonSelected(b))
+        ?.getAttribute('data-value') ?? 'all';
     topCategoriesList.scrollTop = 0;
     const rowClass = 'top-categories-item';
     topCategoriesList
@@ -415,32 +482,75 @@ function MonthCategoriesPanel(el) {
       appContext.budget?.categories ?? [],
       appContext.periodTransactions,
     );
-    const categoryAmounts = calculateCategoryAmounts(
-      categorizedTransactions,
-      true,
-    );
-
     let itemsHtml = '';
-    const sortedCategoryAmounts = Object.entries(categoryAmounts)
+    const categoryAmounts = Object.entries(
+      calculateCategoryAmounts(
+        categorizedTransactions,
+        true, // TODO should this be hardcoded or not?
+      ),
+    )
       .map(([categoryName, categoryAmount]) => {
         let category = null;
         if (categoryName === 'uncategorized') {
-          category = { name: 'uncategorized' };
+          category = { name: 'uncategorized', goal: 0.0 };
+        } else {
+          category =
+            appContext.budget?.categories?.find(
+              (c) => c.name === categoryName,
+            ) ?? null;
+          if (category) {
+            category = JSON.parse(JSON.stringify(category));
+          } else {
+            category = { name: 'Unknown' };
+            console.error(
+              `Category with name not found in budget file: ${categoryName}`,
+            );
+          }
         }
-        category =
-          appContext.budget?.categories?.find((c) => c.name === categoryName) ??
-          null;
-        return [category, categoryAmount];
+        category.actual = categoryAmount;
+        return category;
       })
-      .filter(([c]) => c !== null && (!c.type || c.type === 'expense'))
+      // filter out null/Unknown
+      // filter in categories with selected type (or no type meaning expense)
+      .filter(
+        (c) =>
+          c !== null &&
+          c.name !== 'Unknown' &&
+          (c.type === selectedCategoryType ||
+            (!c.type && selectedCategoryType === CategoryType.EXPENSE)),
+      )
       .sort(
-        createCompareTo(([budgetCategory, categoryAmount]) => {
+        createCompareTo((budgetCategory) => {
           // treat no goal as always being under the goal
           const goalAmount = budgetCategory.goal ?? Infinity;
-          return categoryAmount - goalAmount;
+          return budgetCategory.actual - goalAmount;
         }, true),
       );
-    sortedCategoryAmounts.forEach(([category, categoryAmount]) => {
+
+    const groupedByFilterType = groupBy(categoryAmounts, (category) => {
+      if (!isNaN(category.goal)) {
+        // check if actual is within goal amount
+        if (
+          (!category.type || category.type === CategoryType.EXPENSE) &&
+          category.actual > category.goal
+        ) {
+          return GoalFilters.OVERBUDGET;
+        }
+        // TODO add filter when adding income (underbudget) filter
+      }
+      return GoalFilters.ON_TRACK;
+    });
+    const overbudgetCount =
+      groupedByFilterType?.[GoalFilters.OVERBUDGET]?.length ?? 0;
+    const onTrackCount =
+      groupedByFilterType?.[GoalFilters.ON_TRACK]?.length ?? 0;
+    const allCount = categoryAmounts?.length ?? 0;
+    const filteredCategoryAmounts =
+      selectedGoalFilter === GoalFilters.ALL
+        ? categoryAmounts
+        : (groupedByFilterType?.[selectedGoalFilter] ?? []);
+    filteredCategoryAmounts.forEach((category) => {
+      const categoryAmount = category.actual;
       const goal = category.goal;
       const hasGoal = goal !== undefined && goal !== null;
       const amounts = hasGoal
@@ -460,8 +570,10 @@ function MonthCategoriesPanel(el) {
       if (hasGoal) {
         if (categoryAmount > goal) {
           progStatus = 'over';
-        } else if (categoryAmount <= 0.5 * goal) {
-          progStatus = 'low';
+        } else {
+          if (categoryAmount <= 0.5 * goal) {
+            progStatus = 'low';
+          }
         }
       }
       itemsHtml += html`
@@ -472,18 +584,56 @@ function MonthCategoriesPanel(el) {
           </div>
           <progress
             class="${progStatus}"
-            value="${Math.round(categoryAmount)}"
-            max="${Math.round(hasGoal ? category.goal : categoryAmount)}"
+            value="${hasGoal ? Math.round(categoryAmount) : 0}"
+            max="${Math.round(hasGoal ? category.goal : 100)}"
           />
         </div>
       `;
     });
+
     topCategoriesList.innerHTML = itemsHtml;
+
+    overbudgetFilterBtn.textContent = `(${overbudgetCount}) Overbudget`;
+    onTrackFilterBtn.textContent = `(${onTrackCount}) On Track`;
+    allFilterBtn.textContent = `(${allCount}) All`;
+
+    // hide overbudget category if type fitler is Income
+    if (selectedCategoryType === CategoryType.EXPENSE) {
+      displayElement(overbudgetFilterBtn, true);
+    } else {
+      displayElement(overbudgetFilterBtn, false);
+    }
   }
 
   appContext.addEventListener('transactionsChange', updateTopCategories);
   appContext.addEventListener('budgetChange', updateTopCategories);
   appContext.addEventListener('selectedMonthChange', updateTopCategories);
+
+  // setup event listeners for each btn
+  categoryTypeFilterBtns.forEach((typeBtn) => {
+    unselectButton(typeBtn);
+    typeBtn.addEventListener('click', () => {
+      categoryTypeFilterBtns.forEach((b) => unselectButton(b));
+      selectButton(typeBtn);
+      // reset goal filter to "All"
+      categoryGoalFilterBtns.forEach((b) => unselectButton(b));
+      selectButton(allFilterBtn);
+      updateTopCategories();
+    });
+  });
+  // select Expenses by default
+  selectButton(expenseFilterBtn);
+
+  categoryGoalFilterBtns.forEach((filterBtn) => {
+    unselectButton(filterBtn);
+    filterBtn.addEventListener('click', () => {
+      categoryGoalFilterBtns.forEach((b) => unselectButton(b));
+      selectButton(filterBtn);
+      updateTopCategories();
+    });
+  });
+  // select All by default
+  selectButton(allFilterBtn);
 }
 
 const app = () => {

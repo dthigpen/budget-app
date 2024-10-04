@@ -228,10 +228,45 @@ article > header > * {
 }
 
 .totals-section > .overall-section-totals-list {
-  /* flex */
   max-width: 20rem;
   width: 100%;
 }
 .breakdown-sections-container > .totals-section {
   flex-grow: 3;
+}
+
+.categories-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.categories-section > .filters {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: start; */
+  /* flex-wrap: wrap; */
+  gap: 0.5rem;
+}
+
+.scroll-x {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  justify-content: start;
+}
+.scroll-x > * {
+  flex-shrink: 0;
+}
+
+.categories-section .-gone {
+  display: none;
+}
+
+.categories-section > .filters > [role='group'] {
+  /* Without max-width groups take up full width */
+  /* max-width: 20rem; */
+  margin: 0;
+}
+button.small {
+  padding: 0.3rem 0.4rem;
 }
