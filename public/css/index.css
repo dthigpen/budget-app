@@ -1,6 +1,63 @@
 nav {
 }
 
+.top-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.month-picker summary {
+  display: flex;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+.month-picker > .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+month-picker .-gone {
+  display: none;
+}
+
+.month-picker > .content > .results {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: center;
+  max-height: 40rem;
+  overflow-y: auto;
+}
+.month-picker > .content > .results > button {
+  padding: 0.3rem 1rem;
+}
+.month-picker > .content .search {
+  width: min(100%, 20rem);
+}
+
+/* For all cards */
+.card summary {
+  display: flex;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+.card details {
+  margin-bottom: 0;
+}
+.card > .content {
+  display: flex;
+  flex-direction: column;
+}
+
+.totals-card {
+}
+
 .center {
   text-align: center;
 }
@@ -34,6 +91,14 @@ nav {
   gap: 1rem;
 }
 
+.card details > summary {
+  font-weight: bold;
+}
+
+.totals-card {
+  flex-grow: 2;
+}
+
 .overall-section-totals {
   flex-grow: 2;
   flex: display;
@@ -44,17 +109,14 @@ nav {
 article > header > * {
   margin: 0;
 }
-.overall-section-totals > header {
-  text-align: center;
-}
 
-.overall-section-totals > .overall-section-totals-list {
+.overall-section-totals-list {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
-.overall-section-totals > .overall-section-totals-list > * {
+.overall-section-totals-list > * {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -100,7 +162,7 @@ article > header > * {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  max-height: 12rem;
+  max-height: 30rem;
   overflow-y: auto;
 }
 
@@ -138,4 +200,38 @@ article > header > * {
 .top-categories > footer {
   display: flex;
   justify-content: center;
+}
+
+.breakdown-sections-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap-reverse;
+}
+
+.breakdown-sections-container > .categories-section {
+  flex-grow: 4;
+  max-width: 30rem;
+}
+
+.breakdown-card > .sections {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.breakdown-card > header {
+  /* text-align: center; */
+}
+.totals-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.totals-section > .overall-section-totals-list {
+  /* flex */
+  max-width: 20rem;
+  width: 100%;
+}
+.breakdown-sections-container > .totals-section {
+  flex-grow: 3;
 }

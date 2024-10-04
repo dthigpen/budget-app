@@ -28,46 +28,66 @@
       </nav>
       <x-app-context>
         <div class="month-sections box">
-          <div class="month-bar box">
-            <button>Average</button>
-          </div>
-          <div class="overall-section box">
-            <article class="overall-section-totals box">
-              <header><h3>Overall</h3></header>
-              <div class="overall-section-totals-list">
-                <div class="overall-section-totals-item box">
-                  <div>Income</div>
-                  <div data-field="income">$0.00</div>
-                </div>
-                <div class="overall-section-totals-item box">
-                  <div>Expenses</div>
-                  <div data-field="expenses">$0.00</div>
-                </div>
-                <div class="overall-section-totals-item box">
-                  <div>Savings</div>
-                  <div data-field="savings">(0%) $0.00</div>
+          <div class="top-bar">
+            <details class="month-picker">
+              <summary>Average</summary>
+              <div class="content">
+                <input
+                  class="search"
+                  type="search"
+                  name="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                />
+                <div class="results">
+                  <button class="outline">Average</button>
                 </div>
               </div>
-            </article>
-            <article class="top-categories">
-              <header><h3>Top Expenses</h3></header>
-              <div class="top-categories-list">
-                <div class="top-categories-item">
-                  <div class="spread">
-                    <div class="category">Rent</div>
-                    <div>
-                      <span class="spent">1267.95</span> /
-                      <span class="goal">1267.95</span>
+            </details>
+          </div>
+          <article class="breakdown-card">
+            <!-- <header><h3>Breakdown</h3></header> -->
+            <div class="breakdown-sections-container">
+              <div class="categories-section">
+                <h4 class="center">Categories</h4>
+                <div class="top-categories-list">
+                  <div class="top-categories-item">
+                    <div class="spread">
+                      <div class="category">Rent</div>
+                      <div>
+                        <span class="spent">1267.95</span> /
+                        <span class="goal">1267.95</span>
+                      </div>
                     </div>
+                    <progress class="over" value="1268" max="1268" />
                   </div>
-                  <progress class="over" value="1268" max="1268" />
                 </div>
               </div>
-              <footer>
-                <button class="outline secondary">All Categories</button>
-              </footer>
-            </article>
-          </div>
+              <div class="totals-section">
+                <h4 class="center">Overall</h4>
+
+                <div class="overall-section-totals-list">
+                  <!-- TODO use css grid here -->
+                  <div class="overall-section-totals-item box">
+                    <div>Income</div>
+                    <div data-field="income">$0.00</div>
+                  </div>
+                  <div class="overall-section-totals-item box">
+                    <div>Expenses</div>
+                    <div data-field="expenses">(0%) $0.00</div>
+                  </div>
+                  <div class="overall-section-totals-item box">
+                    <div>Savings</div>
+                    <div data-field="savings">(0%) $0.00</div>
+                  </div>
+                  <div class="overall-section-totals-item box">
+                    <div>Uncategorized</div>
+                    <div data-field="uncategorized">(0%) $0.00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
           <article class="transactions-section box">
             <header>
               <div class="transactions-section-bar">
