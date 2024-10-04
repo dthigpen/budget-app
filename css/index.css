@@ -20,9 +20,10 @@ nav {
   align-items: center;
 }
 
-.-gone {
+month-picker .-gone {
   display: none;
 }
+
 .month-picker > .content > .results {
   display: flex;
   flex-direction: row;
@@ -37,6 +38,24 @@ nav {
 }
 .month-picker > .content .search {
   width: min(100%, 20rem);
+}
+
+/* For all cards */
+.card summary {
+  display: flex;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+.card details {
+  margin-bottom: 0;
+}
+.card > .content {
+  display: flex;
+  flex-direction: column;
+}
+
+.totals-card {
 }
 
 .center {
@@ -72,6 +91,14 @@ nav {
   gap: 1rem;
 }
 
+.card details > summary {
+  font-weight: bold;
+}
+
+.totals-card {
+  flex-grow: 2;
+}
+
 .overall-section-totals {
   flex-grow: 2;
   flex: display;
@@ -82,17 +109,14 @@ nav {
 article > header > * {
   margin: 0;
 }
-.overall-section-totals > header {
-  text-align: center;
-}
 
-.overall-section-totals > .overall-section-totals-list {
+.overall-section-totals-list {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
-.overall-section-totals > .overall-section-totals-list > * {
+.overall-section-totals-list > * {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -138,7 +162,7 @@ article > header > * {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  max-height: 12rem;
+  max-height: 30rem;
   overflow-y: auto;
 }
 
@@ -177,3 +201,59 @@ article > header > * {
   display: flex;
   justify-content: center;
 }
+
+.breakdown-sections-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap-reverse;
+}
+
+.breakdown-sections-container > .categories-section {
+  flex-grow: 4;
+  max-width: 30rem;
+}
+
+.breakdown-card > .sections {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.breakdown-card > header {
+  /* text-align: center; */
+}
+.totals-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.totals-section > .overall-section-totals-list {
+  max-width: 20rem;
+  width: 100%;
+}
+.breakdown-sections-container > .totals-section {
+  flex-grow: 3;
+}
+
+.categories-section {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+.categories-section > .filters {
+	display: flex;
+	justify-content: start;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	
+}
+
+.categories-section > .filters > [role="group"] {
+/* Without max-width groups take up full width */
+	max-width: 10rem;
+	margin: 0;
+}
+button.small {
+	  padding: 0.3rem 0.4rem;
+}
+
