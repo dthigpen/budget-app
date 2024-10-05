@@ -112,7 +112,12 @@
               <div class="transactions-section-bar">
                 <h3 class="box">Transactions</h3>
                 <div>
-                  <button data-target="modal-example" onclick="toggleModal(event)">New</button>
+                  <button
+                    data-target="modal-example"
+                    onclick="toggleModal(event)"
+                  >
+                    New
+                  </button>
                   <div>
                     <input id="file-upload-input" type="file" hidden />
                     <button id="file-upload-btn">Upload</button>
@@ -138,7 +143,7 @@
           </article>
         </div>
       </x-app-context>
-      <dialog id="modal-example">
+      <dialog id="modal-example" open>
         <article>
           <header>
             <button
@@ -154,44 +159,38 @@
               <fieldset>
                 <label>
                   Description
-                  <input
-                    name="description"
-                    placeholder="Description"
-                  />
+                  <input name="description" placeholder="Description" />
+                </label>
+                <div class="form-row">
+                  <label>
+                    Amount
+                    <input type="number" name="amount" placeholder="0.0" />
+                  </label>
+                  <label>
+                    Placeholder
+                    <input type="checkbox" name="isplaceholder" />
+                  </label>
+                </div>
+                <div class="form-row">
+                  <label>
+                    Date
+                    <input type="date" name="date" placeholder="Date" />
+                  </label>
+                  <button>Today</button>
+                </div>
+                <label>
+                  Account
+                  <input type="text" name="account" placeholder="Account" />
                 </label>
                 <label>
-                  Amount
+                  Category
                   <input
-                    type="number"
+                    type="text"
                     name="amount"
-                    placeholder="0.0"
+                    placeholder="Groceries"
+                    disabled
                   />
                 </label>
-                <label>
-                                  Date
-                                  <input
-                                    type="date"
-                                    name="date"
-                                    placeholder="Date"
-                                  />
-                                </label>
-                                <label>
-                                                  Account
-                                                  <input
-                                                    type="text"
-                                                    name="account"
-                                                    placeholder="Account"
-                                                  />
-                                                </label>
-                                                <label>
-                                                                  Category
-                                                                  <input
-                                                                    type="text"
-                                                                    name="amount"
-                                                                    placeholder="Groceries"
-                                                                    disabled
-                                                                  />
-                                                                </label>
               </fieldset>
             </form>
           </div>

@@ -274,12 +274,18 @@ select.small {
 }
 
 .form-container {
-	display: flex;
-	flex-direction: column;
-	overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 .form-row {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+}
+.form-row input,
+label {
+  margin-bottom: 0;
 }

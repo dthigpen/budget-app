@@ -22,7 +22,6 @@ const GoalFilters = {
   ON_TRACK: 'ontrack',
 };
 // Mount functions
-
 function MonthSelectorBar(monthContainerEl) {
   const appContext = monthContainerEl.closest('x-app-context');
   const monthNames = [
@@ -619,6 +618,7 @@ function SetupSelect(selectEl) {
     console.log(`option[value="${value}"]`);
   });
 }
+
 const app = () => {
   console.log('Loading app');
   // register custom elements

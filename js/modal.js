@@ -6,10 +6,10 @@
  */
 
 // Config
-const isOpenClass = "modal-is-open";
-const openingClass = "modal-is-opening";
-const closingClass = "modal-is-closing";
-const scrollbarWidthCssVar = "--pico-scrollbar-width";
+const isOpenClass = 'modal-is-open';
+const openingClass = 'modal-is-opening';
+const closingClass = 'modal-is-closing';
+const scrollbarWidthCssVar = '--pico-scrollbar-width';
 const animationDuration = 400; // ms
 let visibleModal = null;
 
@@ -49,23 +49,24 @@ const closeModal = (modal) => {
 };
 
 // Close with a click outside
-document.addEventListener("click", (event) => {
+document.addEventListener('click', (event) => {
   if (visibleModal === null) return;
-  const modalContent = visibleModal.querySelector("article");
+  const modalContent = visibleModal.querySelector('article');
   const isClickInside = modalContent.contains(event.target);
   !isClickInside && closeModal(visibleModal);
 });
 
 // Close with Esc key
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && visibleModal) {
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && visibleModal) {
     closeModal(visibleModal);
   }
 });
 
 // Get scrollbar width
 const getScrollbarWidth = () => {
-  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+  const scrollbarWidth =
+    window.innerWidth - document.documentElement.clientWidth;
   return scrollbarWidth;
 };
 
