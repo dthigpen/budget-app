@@ -112,7 +112,7 @@
               <div class="transactions-section-bar">
                 <h3 class="box">Transactions</h3>
                 <div>
-                  <button>New</button>
+                  <button data-target="modal-example" onclick="toggleModal(event)">New</button>
                   <div>
                     <input id="file-upload-input" type="file" hidden />
                     <button id="file-upload-btn">Upload</button>
@@ -138,6 +138,82 @@
           </article>
         </div>
       </x-app-context>
+      <dialog id="modal-example">
+        <article>
+          <header>
+            <button
+              aria-label="Close"
+              rel="prev"
+              data-target="modal-example"
+              onclick="toggleModal(event)"
+            ></button>
+            <h3>New Transaction</h3>
+          </header>
+          <div class="form-container">
+            <form>
+              <fieldset>
+                <label>
+                  Description
+                  <input
+                    name="description"
+                    placeholder="Description"
+                  />
+                </label>
+                <label>
+                  Amount
+                  <input
+                    type="number"
+                    name="amount"
+                    placeholder="0.0"
+                  />
+                </label>
+                <label>
+                                  Date
+                                  <input
+                                    type="date"
+                                    name="date"
+                                    placeholder="Date"
+                                  />
+                                </label>
+                                <label>
+                                                  Account
+                                                  <input
+                                                    type="text"
+                                                    name="account"
+                                                    placeholder="Account"
+                                                  />
+                                                </label>
+                                                <label>
+                                                                  Category
+                                                                  <input
+                                                                    type="text"
+                                                                    name="amount"
+                                                                    placeholder="Groceries"
+                                                                    disabled
+                                                                  />
+                                                                </label>
+              </fieldset>
+            </form>
+          </div>
+          <footer>
+            <button
+              role="button"
+              class="secondary"
+              data-target="modal-example"
+              onclick="toggleModal(event)"
+            >
+              Cancel</button
+            ><button
+              autofocus
+              data-target="modal-example"
+              onclick="toggleModal(event)"
+            >
+              Create
+            </button>
+          </footer>
+        </article>
+      </dialog>
+      <script src="js/modal.js"></script>
       <script type="module" src="./js/index.js"></script>
     </main>
   </body>
