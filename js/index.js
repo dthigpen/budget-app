@@ -422,30 +422,12 @@ function MonthCategoriesPanel(el) {
   const categoryFiltersContainer = el.querySelector(
     '.categories-section .filters',
   );
-  // const incomeExpensesButtons = categoryFiltersContainer.querySelectorAll('.types button');
-  const incomeFilterBtn = categoryFiltersContainer.querySelector(
-    'button[data-value="income"]',
+  const categoryTypeSelect = categoryFiltersContainer.querySelector(
+    'select[name="category-type-select"]',
   );
-  const expenseFilterBtn = categoryFiltersContainer.querySelector(
-    'button[data-value="expense"]',
+  const goalFilterSelect = categoryFiltersContainer.querySelector(
+    'select[name="goal-filter-select"]',
   );
-
-  const categoryTypeFilterBtns = [incomeFilterBtn, expenseFilterBtn];
-
-  const allFilterBtn = categoryFiltersContainer.querySelector(
-    'button[data-value="all"]',
-  );
-  const overbudgetFilterBtn = categoryFiltersContainer.querySelector(
-    'button[data-value="overbudget"]',
-  );
-  const onTrackFilterBtn = categoryFiltersContainer.querySelector(
-    'button[data-value="ontrack"]',
-  );
-  const categoryGoalFilterBtns = [
-    allFilterBtn,
-    overbudgetFilterBtn,
-    onTrackFilterBtn,
-  ];
 
   function updateTopCategories() {
     // TODO remove add filter buttons if apply to current categories
@@ -455,15 +437,8 @@ function MonthCategoriesPanel(el) {
       '.categories-section .top-categories-list',
     );
     // category type is income or expense
-    const selectedCategoryType =
-      categoryFiltersContainer
-        .querySelector('.types button.selected')
-        ?.getAttribute('data-value') ?? 'expense';
-
-    const selectedGoalFilter =
-      categoryGoalFilterBtns
-        .find((b) => isButtonSelected(b))
-        ?.getAttribute('data-value') ?? 'all';
+    const selectedCategoryType = categoryTypeSelect.value;
+    const selectedGoalFilter = goalFilterSelect.value;
     topCategoriesList.scrollTop = 0;
     const rowClass = 'top-categories-item';
     topCategoriesList
@@ -592,17 +567,29 @@ function MonthCategoriesPanel(el) {
     });
 
     topCategoriesList.innerHTML = itemsHtml;
+    const onTrackOption = goalFilterSelect.querySelector(
+      'option[value="ontrack"]',
+    );
+    const overbudgetOption = goalFilterSelect.querySelector(
+      'option[value="overbudget"]',
+    );
+    const allOption = goalFilterSelect.querySelector('option[value="all"]');
 
-    overbudgetFilterBtn.textContent = `(${overbudgetCount}) Overbudget`;
-    onTrackFilterBtn.textContent = `(${onTrackCount}) On Track`;
-    allFilterBtn.textContent = `(${allCount}) All`;
-
-    // hide overbudget category if type fitler is Income
-    if (selectedCategoryType === CategoryType.EXPENSE) {
-      displayElement(overbudgetFilterBtn, true);
-    } else {
-      displayElement(overbudgetFilterBtn, false);
+    function disableElement(el, disable = true) {
+      if (disable) {
+        el.setAttribute('disable', 'true');
+      } else {
+        el.removeAttribute('disable');
+      }
     }
+    overbudgetOption.textContent = `(${overbudgetCount}) Overbudget`;
+    disableElement(overbudgetOption, overbudgetCount === 0);
+
+    onTrackOption.textContent = `(${onTrackCount}) On Track`;
+    disableElement(onTrackOption, onTrackCount === 0);
+
+    allOption.textContent = `(${allCount}) All`;
+    disableElement(allOption, allCount === 0);
   }
 
   appContext.addEventListener('transactionsChange', updateTopCategories);
@@ -610,37 +597,34 @@ function MonthCategoriesPanel(el) {
   appContext.addEventListener('selectedMonthChange', updateTopCategories);
 
   // setup event listeners for each btn
-  categoryTypeFilterBtns.forEach((typeBtn) => {
-    unselectButton(typeBtn);
-    typeBtn.addEventListener('click', () => {
-      categoryTypeFilterBtns.forEach((b) => unselectButton(b));
-      selectButton(typeBtn);
-      // reset goal filter to "All"
-      categoryGoalFilterBtns.forEach((b) => unselectButton(b));
-      selectButton(allFilterBtn);
-      updateTopCategories();
-    });
+  goalFilterSelect.addEventListener('change', (e) => {
+    updateTopCategories();
   });
-  // select Expenses by default
-  selectButton(expenseFilterBtn);
 
-  categoryGoalFilterBtns.forEach((filterBtn) => {
-    unselectButton(filterBtn);
-    filterBtn.addEventListener('click', () => {
-      categoryGoalFilterBtns.forEach((b) => unselectButton(b));
-      selectButton(filterBtn);
-      updateTopCategories();
-    });
-  });
-  // select All by default
-  selectButton(allFilterBtn);
+  // categoryTypeSelect.value = 'expense';
+  // goalFilterSelect.value = 'all';
 }
 
+function SetupSelect(selectEl) {
+  //disable initially selected
+  selectEl.querySelector('option[selected]')?.setAttribute('disabled', 'true');
+  selectEl.addEventListener('change', (e) => {
+    const value = e.target.value;
+    selectEl
+      .querySelectorAll('option')
+      .forEach((el) => el.removeAttribute('disable'));
+    selectEl
+      .querySelector(`option[selected]`)
+      ?.setAttribute('disabled', 'true');
+    console.log(`option[value="${value}"]`);
+  });
+}
 const app = () => {
   console.log('Loading app');
   // register custom elements
   registerAppContext();
   // Setup mount function components
+  // document.querySelectorAll('select').forEach(el => SetupSelect(el))
   MonthPicker(document.querySelector('.month-picker'));
   MonthTotalsPanel(document.querySelector('.totals-section'));
   MonthCategoriesPanel(document.querySelector('.breakdown-sections-container'));
