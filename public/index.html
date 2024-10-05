@@ -33,7 +33,7 @@
               <summary>Average</summary>
               <div class="content">
                 <input
-                  class="search"
+                  class="search gone"
                   type="search"
                   name="search"
                   placeholder="Search"
@@ -112,7 +112,13 @@
               <div class="transactions-section-bar">
                 <h3 class="box">Transactions</h3>
                 <div>
-                  <button>New</button>
+                  <button
+                    data-target="transaction-modal"
+                    onclick="toggleModal(event)"
+                    id="new-transaction-btn"
+                  >
+                    New
+                  </button>
                   <div>
                     <input id="file-upload-input" type="file" hidden />
                     <button id="file-upload-btn">Upload</button>
@@ -138,6 +144,88 @@
           </article>
         </div>
       </x-app-context>
+      <dialog id="transaction-modal">
+        <article>
+          <header>
+            <button
+              aria-label="Close"
+              rel="prev"
+              data-target="transaction-modal"
+              onclick="toggleModal(event)"
+            ></button>
+            <h3>New Transaction</h3>
+          </header>
+          <div class="form-container">
+            <form>
+              <fieldset>
+                <label>
+                  Description
+                  <input name="description" placeholder="Description" />
+                </label>
+                <div class="form-row">
+                  <label>
+                    Amount
+                    <input
+                      type="number"
+                      step="any"
+                      name="amount"
+                      placeholder="0.0"
+                    />
+                  </label>
+                </div>
+                <div class="form-row">
+                  <label>
+                    Date
+                    <input type="date" name="date" placeholder="Date" />
+                  </label>
+                  <button>Today</button>
+                </div>
+                <label>
+                  Account
+                  <input
+                    type="text"
+                    name="account"
+                    placeholder="Account"
+                    list="accounts-list"
+                  />
+                  <datalist id="accounts-list">
+                    <option value="Some Credit Card"></option>
+                    <option value="Some Checking Account"></option>
+                  </datalist>
+                </label>
+                <label>
+                  Category
+                  <input
+                    type="text"
+                    name="amount"
+                    placeholder="Uncategorized"
+                    disabled
+                  />
+                </label>
+              </fieldset>
+            </form>
+          </div>
+          <footer>
+            <button
+              id="transaction-modal-cancel-btn"
+              role="button"
+              class="secondary"
+              data-target="transaction-modal"
+              onclick="toggleModal(event)"
+            >
+              Cancel</button
+            ><button
+              id="transaction-modal-create-btn"
+              autofocus
+              data-target="transaction-modal"
+              onclick="toggleModal(event)"
+            >
+              Create
+            </button>
+          </footer>
+        </article>
+      </dialog>
+      <script src="./js/modal.js"></script>
       <script type="module" src="./js/index.js"></script>
     </main>
   </body>

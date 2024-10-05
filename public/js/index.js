@@ -22,7 +22,6 @@ const GoalFilters = {
   ON_TRACK: 'ontrack',
 };
 // Mount functions
-
 function MonthSelectorBar(monthContainerEl) {
   const appContext = monthContainerEl.closest('x-app-context');
   const monthNames = [
@@ -220,10 +219,30 @@ function MonthPicker(monthPickerEl) {
 
   appContext.addEventListener('transactionsChange', updateMonthButtons);
 }
-function TransactionsPanel(tableEl) {
-  const appContext = tableEl.closest('x-app-context');
-
+function TransactionsPanel(panelEl) {
+  const appContext = panelEl.closest('x-app-context');
+  // setup buttons
+  const fileUploadBtn = document.getElementById('file-upload-btn');
+  fileUploadBtn.addEventListener('click', () => {
+    document.getElementById('file-upload-input').click();
+  });
+  const transactionDialogId = 'transaction-modal';
+  const newTransactionBtn = panelEl.querySelector('#new-transaction-btn');
+  newTransactionBtn.setAttribute('data-target', transactionDialogId);
+  newTransactionBtn.addEventListener('click', (e) => {
+    console.log('New clicked!');
+  });
+  const transactionDialogEl = document.getElementById(transactionDialogId);
+  const cancelEl = document.getElementById('transaction-modal-cancel-btn');
+  const createEl = document.getElementById('transaction-modal-create-btn');
+  cancelEl.addEventListener('click', (e) => {
+    console.log('Cancel clicked!');
+  });
+  createEl.addEventListener('click', (e) => {
+    console.log('Create clicked!');
+  });
   function updateTable() {
+    const tableEl = panelEl.querySelector('table');
     const isAvg =
       appContext.selectedMonth === undefined ||
       appContext.selectedMonth === null;
@@ -619,17 +638,16 @@ function SetupSelect(selectEl) {
     console.log(`option[value="${value}"]`);
   });
 }
+
 const app = () => {
   console.log('Loading app');
   // register custom elements
   registerAppContext();
   // Setup mount function components
-  // document.querySelectorAll('select').forEach(el => SetupSelect(el))
   MonthPicker(document.querySelector('.month-picker'));
   MonthTotalsPanel(document.querySelector('.totals-section'));
   MonthCategoriesPanel(document.querySelector('.breakdown-sections-container'));
-  TransactionsPanel(document.querySelector('.transactions-section table'));
-  TransactionsUpload(document.getElementById('file-upload-btn'));
+  TransactionsPanel(document.querySelector('.transactions-section'));
   // load data from storage and generate reports
   const appContext = document.querySelector('x-app-context');
   appContext.loadFromLocalStorage();
