@@ -242,9 +242,9 @@ article > header > * {
 }
 .categories-section > .filters {
   display: flex;
-  flex-direction: column;
-  /* justify-content: start; */
-  /* flex-wrap: wrap; */
+  flex-direction: row;
+  justify-content: start;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -262,11 +262,13 @@ article > header > * {
   display: none;
 }
 
-.categories-section > .filters > [role='group'] {
-  /* Without max-width groups take up full width */
-  /* max-width: 20rem; */
-  margin: 0;
-}
-button.small {
+button.small,
+.button.small {
   padding: 0.3rem 0.4rem;
+}
+
+select.small {
+  padding: 0.3rem 1.6rem 0.3rem 0.8rem;
+  width: auto;
+  background-position: center right 0.4rem;
 }
