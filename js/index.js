@@ -298,7 +298,7 @@ function MonthTotalsPanel(totalsEl) {
           if (!category) {
             console.warn(`Unrecognized transaction category: ${categoryName}`);
           } else {
-            categoryType = category.type ?? 'expense';
+            categoryType = category.type ?? CategoryType.EXPENSE;
           }
         }
         return [categoryType, categoryAmount];
