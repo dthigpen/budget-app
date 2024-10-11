@@ -463,7 +463,7 @@ function updateCategoriesChart(chart, data) {
   chart.data.labels = data.map((d) => d.name);
   chart.data.datasets = [
     {
-      label: 'Spending per category',
+      label: 'Actual',
       data: data.map((d) => d.actual),
     },
   ];
@@ -654,12 +654,13 @@ function MonthCategoriesPanel(el) {
   appContext.addEventListener('selectedMonthChange', updateTopCategories);
 
   // setup event listeners for each btn
-  goalFilterSelect.addEventListener('change', (e) => {
+  goalFilterSelect.addEventListener('change', () => {
     updateTopCategories();
   });
 
-  // categoryTypeSelect.value = 'expense';
-  // goalFilterSelect.value = 'all';
+  categoryTypeSelect.addEventListener('change', () => {
+    updateTopCategories();
+  });
 }
 
 function CategoriesChartPanel(panelEl) {
