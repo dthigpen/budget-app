@@ -81,3 +81,25 @@ export function groupBy(list, keyGetter) {
 export function sum(...arr) {
   return arr.reduce((a, b) => a + b, 0);
 }
+
+function isButtonSelected(btnEl) {
+  return !btnEl.classList.contains('outline');
+}
+
+function selectButton(btnEl) {
+  btnEl.classList.remove('outline');
+  btnEl.classList.add('selected');
+}
+
+function unselectButton(btnEl) {
+  btnEl.classList.add('outline');
+  btnEl.classList.remove('selected');
+}
+
+function displayElement(el, display = true) {
+  if (display) {
+    el.classList.remove('-gone');
+  } else {
+    el.classList.add('-gone');
+  }
+}

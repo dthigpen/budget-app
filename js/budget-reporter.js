@@ -357,3 +357,35 @@ function dateStringCompareTo(s1, s2) {
     return 0;
   }
 }
+
+
+
+export function calculateCategoryAmounts(categorizedTransactions, monthAvg = false) {
+  const transactionsByCategory = groupBy(
+    categorizedTransactions,
+    (t) => t.category,
+  );
+  const categoryAmounts = Object.fromEntries(
+    Object.entries(transactionsByCategory).map(([c, ts]) => [
+      c,
+      sum(...ts.map((t) => t.amount)),
+    ]),
+  );
+
+  if (monthAvg) {
+    // create avg report
+    const numMonths = Object.values(
+      groupBy(categorizedTransactions, (t) => t.date.slice(0, 7)),
+    ).length;
+    // change amounts from totals to monthly avg
+    Object.keys(categoryAmounts).forEach((c) => {
+      categoryAmounts[c] = categoryAmounts[c] / numMonths;
+    });
+  }
+  // convert to 2 decimals
+  Object.keys(categoryAmounts).forEach((c) => {
+    categoryAmounts[c] = Number(categoryAmounts[c].toFixed(2));
+  });
+  return categoryAmounts;
+}
+
