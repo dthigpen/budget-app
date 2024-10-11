@@ -225,11 +225,16 @@ article > header > * {
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* gap: 2rem; */
 }
 
+.totals-section > .chart-section {
+  padding-bottom: 1rem;
+}
 .totals-section > .overall-section-totals-list {
   max-width: 20rem;
   width: 100%;
+  padding-bottom: 1rem;
 }
 .breakdown-sections-container > .totals-section {
   flex-grow: 3;

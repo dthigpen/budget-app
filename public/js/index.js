@@ -291,14 +291,13 @@ function TransactionsUpload(el) {
   });
 }
 
-function MonthTotalsPanel(totalsEl) {
-  const appContext = totalsEl.closest('x-app-context');
+function MonthTotalsPanel(totalsListEl) {
+  const appContext = totalsListEl.closest('x-app-context');
   function updateTotals() {
     if ((appContext.budget?.categories ?? []).length === 0) {
       // TODO display message when no categories
       return;
     }
-    const totalsListEl = totalsEl.querySelector('.overall-section-totals-list');
     const categorizedTransactions = categorizeTransactions(
       appContext.budget?.categories ?? [],
       appContext.periodTransactions,
@@ -436,6 +435,40 @@ function displayElement(el, display = true) {
     el.classList.add('-gone');
   }
 }
+
+function initCategoriesChart(chartEl) {
+  const data = [
+    { year: 2010, count: 10 },
+    { year: 2011, count: 20 },
+    { year: 2012, count: 15 },
+    { year: 2013, count: 25 },
+    { year: 2014, count: 22 },
+    { year: 2015, count: 30 },
+    { year: 2016, count: 28 },
+  ];
+  return new Chart(chartEl, {
+    type: 'doughnut',
+    data: {
+      labels: data.map((d) => d.year),
+      datasets: [
+        {
+          label: 'Total',
+          data: data.map((row) => row.count),
+        },
+      ],
+    },
+  });
+}
+function updateCategoriesChart(chart, data) {
+  chart.data.labels = data.map((d) => d.name);
+  chart.data.datasets = [
+    {
+      label: 'Actual',
+      data: data.map((d) => d.actual),
+    },
+  ];
+  chart.update();
+}
 function MonthCategoriesPanel(el) {
   const appContext = el.closest('x-app-context');
   const categoryFiltersContainer = el.querySelector(
@@ -447,7 +480,9 @@ function MonthCategoriesPanel(el) {
   const goalFilterSelect = categoryFiltersContainer.querySelector(
     'select[name="goal-filter-select"]',
   );
-
+  const categoriesChart = initCategoriesChart(
+    document.getElementById('categories-chart'),
+  );
   function updateTopCategories() {
     // TODO remove add filter buttons if apply to current categories
     // e.g. only add overbudget filter if there are overbudget categories
@@ -504,6 +539,7 @@ function MonthCategoriesPanel(el) {
         category.actual = categoryAmount;
         return category;
       })
+
       // filter out null/Unknown
       // filter in categories with selected type (or no type meaning expense)
       .filter(
@@ -520,6 +556,8 @@ function MonthCategoriesPanel(el) {
           return budgetCategory.actual - goalAmount;
         }, true),
       );
+
+    updateCategoriesChart(categoriesChart, categoryAmounts);
 
     const groupedByFilterType = groupBy(categoryAmounts, (category) => {
       if (!isNaN(category.goal)) {
@@ -616,14 +654,26 @@ function MonthCategoriesPanel(el) {
   appContext.addEventListener('selectedMonthChange', updateTopCategories);
 
   // setup event listeners for each btn
-  goalFilterSelect.addEventListener('change', (e) => {
+  goalFilterSelect.addEventListener('change', () => {
     updateTopCategories();
   });
 
-  // categoryTypeSelect.value = 'expense';
-  // goalFilterSelect.value = 'all';
+  categoryTypeSelect.addEventListener('change', () => {
+    updateTopCategories();
+  });
 }
 
+function CategoriesChartPanel(panelEl) {
+  function updateChart() {
+    const categorizedTransactions = categorizeTransactions(
+      appContext.budget?.categories ?? [],
+      appContext.periodTransactions,
+    );
+  }
+  appContext.addEventListener('transactionsChange', updateChart);
+  appContext.addEventListener('budgetChange', updateChart);
+  appContext.addEventListener('selectedMonthChange', updateChart);
+}
 function SetupSelect(selectEl) {
   //disable initially selected
   selectEl.querySelector('option[selected]')?.setAttribute('disabled', 'true');
@@ -645,7 +695,7 @@ const app = () => {
   registerAppContext();
   // Setup mount function components
   MonthPicker(document.querySelector('.month-picker'));
-  MonthTotalsPanel(document.querySelector('.totals-section'));
+  MonthTotalsPanel(document.querySelector('.overall-section-totals-list'));
   MonthCategoriesPanel(document.querySelector('.breakdown-sections-container'));
   TransactionsPanel(document.querySelector('.transactions-section'));
   // load data from storage and generate reports

@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="css/index.css" />
   </head>
   <body>
+    <script src="./js/vender/chart.umd.js"></script>
     <main class="container">
       <nav>
         <ul>
@@ -46,7 +47,6 @@
             </details>
           </div>
           <article class="breakdown-card">
-            <!-- <header><h3>Breakdown</h3></header> -->
             <div class="breakdown-sections-container">
               <div class="categories-section">
                 <h4 class="center">Categories</h4>
@@ -83,8 +83,11 @@
                 </div>
               </div>
               <div class="totals-section">
-                <h4 class="center">Overall</h4>
-
+                <h4 class="chart-title center">Overall</h4>
+                <div class="chart-section">
+                  <canvas id="categories-chart"></canvas>
+                </div>
+                <!-- <h4 class="center">Overall</h4> -->
                 <div class="overall-section-totals-list">
                   <!-- TODO use css grid here -->
                   <div class="overall-section-totals-item box">

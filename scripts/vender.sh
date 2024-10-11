@@ -16,3 +16,4 @@ rm -rf public/js/vender
 mkdir -p public/js/vender
 
 # cp -r node_modules/@shoelace-style/shoelace public/js/vender/shoelace
+cp -r node_modules/chart.js/dist/chart.umd.js public/js/vender/chart.umd.js
