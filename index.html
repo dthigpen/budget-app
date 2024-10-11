@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="css/index.css" />
   </head>
   <body>
+    <script src="./js/vender/chart.umd.js"></script>
     <main class="container">
       <nav>
         <ul>
@@ -33,7 +34,7 @@
               <summary>Average</summary>
               <div class="content">
                 <input
-                  class="search"
+                  class="search gone"
                   type="search"
                   name="search"
                   placeholder="Search"
@@ -83,6 +84,10 @@
                 </div>
               </div>
               <div class="totals-section">
+                <h4 class="center">Spending by Category</h4>
+                <div class="chart-section">
+                  <canvas id="categories-chart"></canvas>
+                </div>
                 <h4 class="center">Overall</h4>
 
                 <div class="overall-section-totals-list">
@@ -113,8 +118,9 @@
                 <h3 class="box">Transactions</h3>
                 <div>
                   <button
-                    data-target="modal-example"
+                    data-target="transaction-modal"
                     onclick="toggleModal(event)"
+                    id="new-transaction-btn"
                   >
                     New
                   </button>
@@ -143,13 +149,13 @@
           </article>
         </div>
       </x-app-context>
-      <dialog id="modal-example" open>
+      <dialog id="transaction-modal">
         <article>
           <header>
             <button
               aria-label="Close"
               rel="prev"
-              data-target="modal-example"
+              data-target="transaction-modal"
               onclick="toggleModal(event)"
             ></button>
             <h3>New Transaction</h3>
@@ -164,11 +170,12 @@
                 <div class="form-row">
                   <label>
                     Amount
-                    <input type="number" name="amount" placeholder="0.0" />
-                  </label>
-                  <label>
-                    Placeholder
-                    <input type="checkbox" name="isplaceholder" />
+                    <input
+                      type="number"
+                      step="any"
+                      name="amount"
+                      placeholder="0.0"
+                    />
                   </label>
                 </div>
                 <div class="form-row">
@@ -180,14 +187,23 @@
                 </div>
                 <label>
                   Account
-                  <input type="text" name="account" placeholder="Account" />
+                  <input
+                    type="text"
+                    name="account"
+                    placeholder="Account"
+                    list="accounts-list"
+                  />
+                  <datalist id="accounts-list">
+                    <option value="Some Credit Card"></option>
+                    <option value="Some Checking Account"></option>
+                  </datalist>
                 </label>
                 <label>
                   Category
                   <input
                     type="text"
                     name="amount"
-                    placeholder="Groceries"
+                    placeholder="Uncategorized"
                     disabled
                   />
                 </label>
@@ -196,15 +212,17 @@
           </div>
           <footer>
             <button
+              id="transaction-modal-cancel-btn"
               role="button"
               class="secondary"
-              data-target="modal-example"
+              data-target="transaction-modal"
               onclick="toggleModal(event)"
             >
               Cancel</button
             ><button
+              id="transaction-modal-create-btn"
               autofocus
-              data-target="modal-example"
+              data-target="transaction-modal"
               onclick="toggleModal(event)"
             >
               Create
@@ -212,7 +230,7 @@
           </footer>
         </article>
       </dialog>
-      <script src="js/modal.js"></script>
+      <script src="./js/modal.js"></script>
       <script type="module" src="./js/index.js"></script>
     </main>
   </body>
