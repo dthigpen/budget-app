@@ -87,4 +87,3 @@ export function MonthTotalsPanel(totalsListEl) {
   appContext.addEventListener('budgetChange', updateTotals);
   appContext.addEventListener('selectedMonthChange', updateTotals);
 }
-

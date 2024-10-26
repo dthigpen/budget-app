@@ -358,9 +358,10 @@ function dateStringCompareTo(s1, s2) {
   }
 }
 
-
-
-export function calculateCategoryAmounts(categorizedTransactions, monthAvg = false) {
+export function calculateCategoryAmounts(
+  categorizedTransactions,
+  monthAvg = false,
+) {
   const transactionsByCategory = groupBy(
     categorizedTransactions,
     (t) => t.category,
@@ -388,4 +389,3 @@ export function calculateCategoryAmounts(categorizedTransactions, monthAvg = fal
   });
   return categoryAmounts;
 }
-
