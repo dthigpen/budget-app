@@ -117,7 +117,6 @@
                 <div>
                   <button
                     data-target="transaction-modal"
-                    onclick="toggleModal(event)"
                     id="new-transaction-btn"
                   >
                     New
@@ -146,88 +145,97 @@
             </div>
           </article>
         </div>
-      </x-app-context>
-      <dialog id="transaction-modal">
-        <article>
-          <header>
-            <button
-              aria-label="Close"
-              rel="prev"
-              data-target="transaction-modal"
-              onclick="toggleModal(event)"
-            ></button>
-            <h3>New Transaction</h3>
-          </header>
-          <div class="form-container">
-            <form>
-              <fieldset>
-                <label>
-                  Description
-                  <input name="description" placeholder="Description" />
-                </label>
-                <div class="form-row">
+        <dialog id="transaction-modal">
+          <article>
+            <header>
+              <button
+                id="transaction-modal-close-btn"
+                aria-label="Close"
+                rel="prev"
+                data-target="transaction-modal"
+              ></button>
+              <h3>New Transaction</h3>
+            </header>
+            <div class="form-container">
+              <form>
+                <fieldset>
                   <label>
-                    Amount
+                    Description
                     <input
-                      type="number"
-                      step="any"
-                      name="amount"
-                      placeholder="0.0"
+                      name="description"
+                      placeholder="Description"
+                      minlength="1"
+                      required="true"
                     />
                   </label>
-                </div>
-                <div class="form-row">
+                  <div class="form-row">
+                    <label>
+                      Amount
+                      <input
+                        type="number"
+                        step="any"
+                        name="amount"
+                        placeholder="0.0"
+                      />
+                    </label>
+                  </div>
+                  <div class="form-row">
+                    <label>
+                      Date
+                      <input
+                        id="date-input"
+                        type="date"
+                        name="date"
+                        placeholder="Date"
+                      />
+                    </label>
+                    <button name="today">Today</button>
+                  </div>
                   <label>
-                    Date
-                    <input type="date" name="date" placeholder="Date" />
+                    Account
+                    <input
+                      type="text"
+                      name="account"
+                      placeholder="Account"
+                      list="accounts-list"
+                    />
+                    <datalist id="accounts-list">
+                      <option value="Some Credit Card"></option>
+                      <option value="Some Checking Account"></option>
+                    </datalist>
                   </label>
-                  <button>Today</button>
-                </div>
-                <label>
-                  Account
-                  <input
-                    type="text"
-                    name="account"
-                    placeholder="Account"
-                    list="accounts-list"
-                  />
-                  <datalist id="accounts-list">
-                    <option value="Some Credit Card"></option>
-                    <option value="Some Checking Account"></option>
-                  </datalist>
-                </label>
-                <label>
-                  Category
-                  <input
-                    type="text"
-                    name="amount"
-                    placeholder="Uncategorized"
-                    disabled
-                  />
-                </label>
-              </fieldset>
-            </form>
-          </div>
-          <footer>
-            <button
-              id="transaction-modal-cancel-btn"
-              role="button"
-              class="secondary"
-              data-target="transaction-modal"
-              onclick="toggleModal(event)"
-            >
-              Cancel</button
-            ><button
-              id="transaction-modal-create-btn"
-              autofocus
-              data-target="transaction-modal"
-              onclick="toggleModal(event)"
-            >
-              Create
-            </button>
-          </footer>
-        </article>
-      </dialog>
+                  <label>
+                    Category
+                    <input
+                      type="text"
+                      name="amount"
+                      placeholder="Uncategorized"
+                      disabled
+                    />
+                  </label>
+                </fieldset>
+              </form>
+            </div>
+            <footer>
+              <button
+                id="transaction-modal-cancel-btn"
+                role="button"
+                class="secondary"
+                data-target="transaction-modal"
+                onclick="toggleModal(event)"
+              >
+                Cancel</button
+              ><button
+                id="transaction-modal-create-btn"
+                autofocus
+                data-target="transaction-modal"
+              >
+                Create
+              </button>
+            </footer>
+          </article>
+        </dialog>
+      </x-app-context>
       <script src="./js/modal.js"></script>
       <script type="module" src="./js/index.js"></script>
     </main>

@@ -51,6 +51,20 @@ class AppContext extends HTMLElement {
     );
   }
 
+  #transactionDialogData = null;
+  #transactionDialogOpen = false;
+  openTransactionDialog(data = null) {
+    this.#transactionDialogOpen = true;
+    this.#transactionDialogData = data;
+    this.dispatchEvent(new CustomEvent('openTransactionDialog'));
+  }
+  closeTransactionDialog(clear = true) {
+    this.#transactionDialogOpen = false;
+    if (clear) {
+      this.#transactionDialogData = null;
+    }
+    this.dispatchEvent(new CustomEvent('closeTransactionDialog'));
+  }
   categorizeTransactions() {
     return categorizeTransactions(this.#budget, this.#transactions);
   }

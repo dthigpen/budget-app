@@ -1,3 +1,8 @@
+export function getCurrentYearMonth() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
 export function MonthPicker(monthPickerEl) {
   const monthNames = [
     'January',
@@ -33,10 +38,6 @@ export function MonthPicker(monthPickerEl) {
   }
   // monthPickerEl.querySelector('summary').textContent = 'Select a month';
 
-  function getCurrentYearMonth() {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-  }
   function yearMonthToText(yearMonth) {
     const [yr, mo] = yearMonth.split('-');
     return `${yr} ${monthNames[Number(mo) - 1]}`;

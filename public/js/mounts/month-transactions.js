@@ -7,20 +7,12 @@ export function TransactionsPanel(panelEl) {
   fileUploadBtn.addEventListener('click', () => {
     document.getElementById('file-upload-input').click();
   });
-  const transactionDialogId = 'transaction-modal';
   const newTransactionBtn = panelEl.querySelector('#new-transaction-btn');
-  newTransactionBtn.setAttribute('data-target', transactionDialogId);
+  // const modal = document.getElementById(newTransactionBtn.dataset.target);
+
   newTransactionBtn.addEventListener('click', (e) => {
     console.log('New clicked!');
-  });
-  const transactionDialogEl = document.getElementById(transactionDialogId);
-  const cancelEl = document.getElementById('transaction-modal-cancel-btn');
-  const createEl = document.getElementById('transaction-modal-create-btn');
-  cancelEl.addEventListener('click', (e) => {
-    console.log('Cancel clicked!');
-  });
-  createEl.addEventListener('click', (e) => {
-    console.log('Create clicked!');
+    appContext.openTransactionDialog();
   });
   function updateTable() {
     const tableEl = panelEl.querySelector('table');

@@ -11,7 +11,7 @@ Currently this project is an experiment to simplify the web stack, taking inspir
 - Plain-text budget format to reduce platform lock-in
 - Monthly and average spending breakdown
 - Budget goals
-- Chart view of spending breakdown (planned, below overall stats)
+- Chart view of spending breakdown
 - Batch import of transactions in CSV or JSON format (planned)
 - Transaction, budget, report export (planned)
 - PWA (Progressive Web App) support for offline usage (planned)
@@ -23,7 +23,7 @@ Currently this project is an experiment to simplify the web stack, taking inspir
 ![desktop-screenshot](docs/budget-app-desktop.png)
 
 ### Mobile
-<img src="docs/budget-app-mobile.png" width="400">
+<img src="docs/budget-app-mobile.png" width="200">
 
 ## Wireframe
 
