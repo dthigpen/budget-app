@@ -14,7 +14,7 @@ function getRandomInt(min, max) {
 function getRandomItem(arr) {
   return arr[getRandomInt(0, arr.length - 1)];
 }
-function generateTransactions() {
+export function generateTransactions() {
   const numMonths = 14;
   const now = new Date();
   const startYear = now.getFullYear();
@@ -136,10 +136,10 @@ function generateTransactions() {
       mo--;
     }
   }
-  return transactions;
+  return transactions.map(t => ({...t, account: 'Fake ' + t.account}));
 }
 
-function generateBudget() {
+export function generateBudget() {
   return {
     categories: [
       {
@@ -207,7 +207,7 @@ function generateBudget() {
   };
 }
 
-function generateSettings() {
+export function generateSettings() {
   return {};
 }
 const APP_STATE_STORAGE_KEY = 'budget-app-state';

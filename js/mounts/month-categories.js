@@ -2,19 +2,15 @@ import {
   calculateCategoryAmounts,
   categorizeTransactions,
 } from '../budget-reporter.js';
+import {
+	generateTransactions
+} from '../test-data.js'
 import { CategoryType, GoalFilters } from '../types.js';
 import { createCompareTo, groupBy } from '../util.js';
 import { html } from '../html.js';
 
 function initCategoriesChart(chartEl) {
   const data = [
-    { year: 2010, count: 10 },
-    { year: 2011, count: 20 },
-    { year: 2012, count: 15 },
-    { year: 2013, count: 25 },
-    { year: 2014, count: 22 },
-    { year: 2015, count: 30 },
-    { year: 2016, count: 28 },
   ];
   return new Chart(chartEl, {
     type: 'doughnut',
@@ -30,6 +26,7 @@ function initCategoriesChart(chartEl) {
   });
 }
 function updateCategoriesChart(chart, data) {
+	console.log({chartData: data})
   chart.data.labels = data.map((d) => d.name);
   chart.data.datasets = [
     {
@@ -50,9 +47,29 @@ export function MonthCategoriesPanel(el) {
   const goalFilterSelect = categoryFiltersContainer.querySelector(
     'select[name="goal-filter-select"]',
   );
-  const categoriesChart = initCategoriesChart(
-    document.getElementById('categories-chart'),
+  const testDataSwitch = categoryFiltersContainer.querySelector(
+    'input[name="enable-test-data"]',
   );
+	const categoriesChartEl = document.getElementById('categories-chart')
+	const categoriesChartMsgEl = document.getElementById('categories-chart-msg')
+  const categoriesChart = initCategoriesChart(
+	  categoriesChartEl
+  );
+
+  testDataSwitch.addEventListener('change', function(){
+    const checked = this.checked;
+	  
+		  let currentTransations = [...appContext.transactions];
+		  currentTransations = currentTransations.filter(t => !t.account.startsWith('Fake '))
+	  if(checked) {
+		  const testTransactions = generateTransactions();
+		  appContext.transactions = [...currentTransations, ...testTransactions]
+	  } else {
+		  appContext.transactions = [...currentTransations]
+	  }
+  })
+
+	testDataSwitch.checked = appContext.transactions.some(t => t.account.startsWith('Fake '))
   function updateTopCategories() {
     // TODO remove add filter buttons if apply to current categories
     // e.g. only add overbudget filter if there are overbudget categories
@@ -69,6 +86,7 @@ export function MonthCategoriesPanel(el) {
       .querySelectorAll(`.${rowClass}`)
       .forEach((e) => e.remove());
     const isAvg = !appContext.selectedMonth;
+	  /*
     if (
       appContext.periodTransactions.length === 0 ||
       appContext.budget?.categories === undefined ||
@@ -77,10 +95,10 @@ export function MonthCategoriesPanel(el) {
       // TODO show message when no transactions
       return;
     }
-    const categorizedTransactions = categorizeTransactions(
-      appContext.budget?.categories ?? [],
-      appContext.periodTransactions,
-    );
+	*/
+	testDataSwitch.checked = appContext.transactions.some(t => t.account.startsWith('Fake '))
+	  const categorizedTransactions = appContext.categorizePeriodTransactions()
+	  console.log({month: appContext.selectedMonth, ts: categorizedTransactions})
     let itemsHtml = '';
     const categoryAmounts = Object.entries(
       calculateCategoryAmounts(
@@ -127,6 +145,12 @@ export function MonthCategoriesPanel(el) {
         }, true),
       );
 
+	  console.log({period: appContext.periodTransactions})
+	  console.log({categoryAmounts})
+	  categoriesChartEl.style.height = '300px'
+	  categoriesChartEl.style.width = '300px'
+	  categoriesChartMsgEl.style.display = categoryAmounts?.length ?? 0 > 0 ? 'none' : 'block'
+	  categoriesChartEl.style.display = categoryAmounts?.length ?? 0 > 0 ? 'block' : 'none'
     updateCategoriesChart(categoriesChart, categoryAmounts);
 
     const groupedByFilterType = groupBy(categoryAmounts, (category) => {
@@ -142,6 +166,7 @@ export function MonthCategoriesPanel(el) {
       }
       return GoalFilters.ON_TRACK;
     });
+	  console.log({groupedByFilterType})
     const overbudgetCount =
       groupedByFilterType?.[GoalFilters.OVERBUDGET]?.length ?? 0;
     const onTrackCount =
@@ -233,6 +258,7 @@ export function MonthCategoriesPanel(el) {
   });
 }
 
+/*
 function CategoriesChartPanel(panelEl) {
   function updateChart() {
     const categorizedTransactions = categorizeTransactions(
@@ -244,3 +270,4 @@ function CategoriesChartPanel(panelEl) {
   appContext.addEventListener('budgetChange', updateChart);
   appContext.addEventListener('selectedMonthChange', updateChart);
 }
+*/

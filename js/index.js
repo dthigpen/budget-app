@@ -7,7 +7,7 @@ import { MonthCategoriesPanel } from './mounts/month-categories.js';
 import { TransactionDialog } from './mounts/transaction-dialog.js';
 
 // Generate test data and save to local storage
-generateTestData();
+//generateTestData();
 
 const app = () => {
   console.log('Loading app');

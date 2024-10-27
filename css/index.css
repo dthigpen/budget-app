@@ -249,8 +249,13 @@ article > header > * {
   display: flex;
   flex-direction: row;
   justify-content: start;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.categories-section > .filters > * {
+  margin-bottom: 0;
 }
 
 .scroll-x {
