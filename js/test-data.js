@@ -136,11 +136,11 @@ export function generateTransactions() {
       mo--;
     }
   }
-  return transactions.map(t => ({...t, account: 'Fake ' + t.account}));
+  return transactions.map((t) => ({ ...t, account: 'Fake ' + t.account }));
 }
 
 export function generateBudget() {
-  return {
+  const budget = {
     categories: [
       {
         name: 'Electric',
@@ -205,6 +205,10 @@ export function generateBudget() {
       },
     ],
   };
+  budget.categories.forEach((c) => {
+    c.name = 'Fake ' + c.name;
+  });
+  return budget;
 }
 
 export function generateSettings() {

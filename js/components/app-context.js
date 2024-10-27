@@ -42,16 +42,14 @@ class AppContext extends HTMLElement {
   }
 
   get periodTransactions() {
-	  const month = this.selectedMonth;
+    const month = this.selectedMonth;
     return (
       (!month
         ? this.#transactions
-        : this.#transactions.filter((t) =>
-            t.date.startsWith(month),
-          )) ?? []
+        : this.#transactions.filter((t) => t.date.startsWith(month))) ?? []
     );
   }
-  
+
   #transactionDialogData = null;
   #transactionDialogOpen = false;
   openTransactionDialog(data = null) {
@@ -70,11 +68,10 @@ class AppContext extends HTMLElement {
     return categorizeTransactions(this.#budget, this.#transactions);
   }
   categorizePeriodTransactions() {
-	return categorizeTransactions(
-	      this.#budget?.categories ?? [],
-	      this.periodTransactions ?? [],
-	    );
-
+    return categorizeTransactions(
+      this.#budget?.categories ?? [],
+      this.periodTransactions ?? [],
+    );
   }
   refreshReports() {
     const overallReport = generateMonthReports(
@@ -92,16 +89,16 @@ class AppContext extends HTMLElement {
 
   #selectedMonth = null;
   get selectedMonth() {
-	  // if valid selected month return it
-	  if(this.#selectedMonth) {
-		  return this.#selectedMonth
-	  }
-	  // try return latest month
-	  if(this.#transactions?.length ?? 0 > 0) {
-		  return this.#transactions.at(-1).date.slice(0,7)
-	  }
-	  // otherwise
-	  return null
+    // if valid selected month return it
+    if (this.#selectedMonth) {
+      return this.#selectedMonth;
+    }
+    // try return latest month
+    if (this.#transactions?.length ?? 0 > 0) {
+      return this.#transactions.at(-1).date.slice(0, 7);
+    }
+    // otherwise
+    return null;
   }
   set selectedMonth(value) {
     this.#selectedMonth = value;
