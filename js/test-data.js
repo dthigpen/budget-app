@@ -136,7 +136,7 @@ export function generateTransactions() {
       mo--;
     }
   }
-  return transactions.map((t) => ({ ...t, account: 'Fake ' + t.account }));
+  return transactions;
 }
 
 export function generateBudget() {
@@ -205,22 +205,19 @@ export function generateBudget() {
       },
     ],
   };
-  budget.categories.forEach((c) => {
-    c.name = 'Fake ' + c.name;
-  });
   return budget;
 }
 
 export function generateSettings() {
   return {};
 }
-const APP_STATE_STORAGE_KEY = 'budget-app-state';
+const APP_STATE_DEMO_MODE_STORAGE_KEY = 'budget-app-demo-mode-state';
 
-export function generateTestData() {
+export function saveTestDataIntoStorage() {
   const state = {
     budget: generateBudget(),
     transactions: generateTransactions(),
     settings: generateSettings(),
   };
-  localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(state));
+  localStorage.setItem(APP_STATE_DEMO_MODE_STORAGE_KEY, JSON.stringify(state));
 }

@@ -299,3 +299,9 @@ select.small {
 label {
   margin-bottom: 0;
 }
+
+.budget-editor-container footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}

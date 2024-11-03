@@ -44,38 +44,35 @@ export function MonthCategoriesPanel(el) {
   const goalFilterSelect = categoryFiltersContainer.querySelector(
     'select[name="goal-filter-select"]',
   );
-  const testDataSwitch = categoryFiltersContainer.querySelector(
-    'input[name="enable-test-data"]',
-  );
   const categoriesChartEl = document.getElementById('categories-chart');
   const categoriesChartMsgEl = document.getElementById('categories-chart-msg');
   const categoriesChart = initCategoriesChart(categoriesChartEl);
 
-  testDataSwitch.addEventListener('change', function () {
-    const checked = this.checked;
+  //   testDataSwitch.addEventListener('change', function () {
+  //     const checked = this.checked;
+  //
+  //     let budgetWithoutFakeCategories = { ...(appContext.budget ?? {}) };
+  //     budgetWithoutFakeCategories.categories = (
+  //       budgetWithoutFakeCategories.categories ?? []
+  //     ).filter((c) => !c.name.startsWith('Fake '));
+  //     let currentTransations = [...appContext.transactions];
+  //     currentTransations = currentTransations.filter(
+  //       (t) => !t.account.startsWith('Fake '),
+  //     );
+  //     if (checked) {
+  //       const testTransactions = generateTransactions();
+  //       appContext.transactions = [...currentTransations, ...testTransactions];
+  //       budgetWithoutFakeCategories.categories = generateBudget().categories;
+  //       appContext.budget = budgetWithoutFakeCategories;
+  //     } else {
+  //       appContext.transactions = [...currentTransations];
+  //       appContext.budget = budgetWithoutFakeCategories;
+  //     }
+  //   });
 
-    let budgetWithoutFakeCategories = { ...(appContext.budget ?? {}) };
-    budgetWithoutFakeCategories.categories = (
-      budgetWithoutFakeCategories.categories ?? []
-    ).filter((c) => !c.name.startsWith('Fake '));
-    let currentTransations = [...appContext.transactions];
-    currentTransations = currentTransations.filter(
-      (t) => !t.account.startsWith('Fake '),
-    );
-    if (checked) {
-      const testTransactions = generateTransactions();
-      appContext.transactions = [...currentTransations, ...testTransactions];
-      budgetWithoutFakeCategories.categories = generateBudget().categories;
-      appContext.budget = budgetWithoutFakeCategories;
-    } else {
-      appContext.transactions = [...currentTransations];
-      appContext.budget = budgetWithoutFakeCategories;
-    }
-  });
-
-  testDataSwitch.checked = appContext.transactions.some((t) =>
-    t.account.startsWith('Fake '),
-  );
+  // testDataSwitch.checked = appContext.transactions.some((t) =>
+  //   t.account.startsWith('Fake '),
+  // );
   function updateTopCategories() {
     // TODO remove add filter buttons if apply to current categories
     // e.g. only add overbudget filter if there are overbudget categories
@@ -102,9 +99,6 @@ export function MonthCategoriesPanel(el) {
       return;
     }
 	*/
-    testDataSwitch.checked = appContext.transactions.some((t) =>
-      t.account.startsWith('Fake '),
-    );
     const categorizedTransactions = appContext.categorizePeriodTransactions();
     console.log({
       month: appContext.selectedMonth,
