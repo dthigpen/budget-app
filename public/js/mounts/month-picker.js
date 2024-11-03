@@ -55,7 +55,7 @@ export function MonthPicker(monthPickerEl) {
     // Remove old buttons
     monthPickerEl.querySelectorAll('button').forEach((btnEl) => {
       if (!btnEl.classList.contains('outline')) {
-        selected = btnEl.getAttribute('data-value');
+        //selected = btnEl.getAttribute('data-value');
       }
       btnEl.remove();
     });

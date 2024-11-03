@@ -14,7 +14,7 @@ function getRandomInt(min, max) {
 function getRandomItem(arr) {
   return arr[getRandomInt(0, arr.length - 1)];
 }
-function generateTransactions() {
+export function generateTransactions() {
   const numMonths = 14;
   const now = new Date();
   const startYear = now.getFullYear();
@@ -139,8 +139,8 @@ function generateTransactions() {
   return transactions;
 }
 
-function generateBudget() {
-  return {
+export function generateBudget() {
+  const budget = {
     categories: [
       {
         name: 'Electric',
@@ -205,18 +205,19 @@ function generateBudget() {
       },
     ],
   };
+  return budget;
 }
 
-function generateSettings() {
+export function generateSettings() {
   return {};
 }
-const APP_STATE_STORAGE_KEY = 'budget-app-state';
+const APP_STATE_DEMO_MODE_STORAGE_KEY = 'budget-app-demo-mode-state';
 
-export function generateTestData() {
+export function saveTestDataIntoStorage() {
   const state = {
     budget: generateBudget(),
     transactions: generateTransactions(),
     settings: generateSettings(),
   };
-  localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(state));
+  localStorage.setItem(APP_STATE_DEMO_MODE_STORAGE_KEY, JSON.stringify(state));
 }

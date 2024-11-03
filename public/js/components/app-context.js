@@ -3,8 +3,15 @@ import {
   categorizeTransactions,
 } from '../budget-reporter.js';
 import { mergeDeep, createCompareTo } from '../util.js';
+import { saveTestDataIntoStorage } from '../test-data.js';
 
+// local storage key where all state is located under
 const APP_STATE_STORAGE_KEY = 'budget-app-state';
+// local storage key for whether to load in demo mode or not
+const DEMO_MODE_ENABLED_KEY = 'budget-app-demo-mode-enabled';
+// local storage key for where all DEMO state is located under
+const APP_STATE_DEMO_MODE_STORAGE_KEY = 'budget-app-demo-mode-state';
+
 const DEFAULT_SETTINGS = {
   currencySymbol: '$',
 };
@@ -42,12 +49,11 @@ class AppContext extends HTMLElement {
   }
 
   get periodTransactions() {
+    const month = this.selectedMonth;
     return (
-      (!this.#selectedMonth
+      (!month
         ? this.#transactions
-        : this.#transactions.filter((t) =>
-            t.date.startsWith(this.#selectedMonth),
-          )) ?? []
+        : this.#transactions.filter((t) => t.date.startsWith(month))) ?? []
     );
   }
 
@@ -68,6 +74,12 @@ class AppContext extends HTMLElement {
   categorizeTransactions() {
     return categorizeTransactions(this.#budget, this.#transactions);
   }
+  categorizePeriodTransactions() {
+    return categorizeTransactions(
+      this.#budget?.categories ?? [],
+      this.periodTransactions ?? [],
+    );
+  }
   refreshReports() {
     const overallReport = generateMonthReports(
       this.#budget,
@@ -78,18 +90,35 @@ class AppContext extends HTMLElement {
       acc[cur.month] = cur;
       return acc;
     }, {});
-    // console.log({ overallReport });
     this.#reports = overallReport;
     this.dispatchEvent(new CustomEvent('reportsChange'));
   }
 
   #selectedMonth = null;
   get selectedMonth() {
-    return this.#selectedMonth;
+    // if valid selected month return it
+    if (this.#selectedMonth) {
+      return this.#selectedMonth;
+    }
+    // try return latest month
+    if (this.#transactions?.length ?? 0 > 0) {
+      return this.#transactions.at(-1).date.slice(0, 7);
+    }
+    // otherwise
+    return null;
   }
   set selectedMonth(value) {
     this.#selectedMonth = value;
     this.dispatchEvent(new CustomEvent('selectedMonthChange'));
+  }
+
+  get demoMode() {
+    return JSON.parse(localStorage.getItem(DEMO_MODE_ENABLED_KEY) ?? 'true');
+  }
+
+  set demoMode(value) {
+    localStorage.setItem(DEMO_MODE_ENABLED_KEY, JSON.stringify(value === true));
+    this.loadFromLocalStorage();
   }
   contextToString() {
     return JSON.stringify({
@@ -107,9 +136,22 @@ class AppContext extends HTMLElement {
   }
   loadFromLocalStorage() {
     console.log('Loading state from local storage');
-    const stateStr = localStorage.getItem(APP_STATE_STORAGE_KEY) ?? '{}';
+    // default to demo mode
+    const isDemoMode = this.demoMode;
+    const key = isDemoMode
+      ? APP_STATE_DEMO_MODE_STORAGE_KEY
+      : APP_STATE_STORAGE_KEY;
+    let stateStr = localStorage.getItem(key) ?? '{}';
+    console.log(`Is demo mode: ${isDemoMode}`);
+    // if demo mode and no demo data, create demo data
+    if (isDemoMode && stateStr === '{}') {
+      console.log(`Generating demo data`);
+      saveTestDataIntoStorage();
+      stateStr = localStorage.getItem(key) ?? '{}';
+    }
     this.contextFromString(stateStr);
   }
+
   connectedCallback() {}
   constructor() {
     super();

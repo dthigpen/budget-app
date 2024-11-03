@@ -249,8 +249,13 @@ article > header > * {
   display: flex;
   flex-direction: row;
   justify-content: start;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.categories-section > .filters > * {
+  margin-bottom: 0;
 }
 
 .scroll-x {
@@ -293,4 +298,10 @@ select.small {
 .form-row input,
 label {
   margin-bottom: 0;
+}
+
+.budget-editor-container footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
 }
