@@ -1,30 +1,33 @@
+import { html } from '../html.js';
+
 export function getCurrentYearMonth() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
-export function MonthPicker(monthPickerEl) {
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  const appContext = monthPickerEl.closest('x-app-context');
-  const searchEl = monthPickerEl.querySelector('.search');
-  const resultsEl = monthPickerEl.querySelector('.results');
-  const summaryEl = monthPickerEl.querySelector('summary');
+const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
 
-  function applySearchFilter() {
-    monthPickerEl.querySelectorAll('button').forEach((btnEl) => {
+function yearMonthToText(yearMonth) {
+  const [yr, mo] = yearMonth.split('-');
+  return `${yr} ${monthNames[Number(mo) - 1]}`;
+}
+
+class MonthPicker extends HTMLElement {
+  applySearchFilter() {
+    this.querySelectorAll('button').forEach((btnEl) => {
       const searchString = searchEl.value.trim();
       if (
         searchString === '' ||
@@ -36,24 +39,50 @@ export function MonthPicker(monthPickerEl) {
       }
     });
   }
-  // monthPickerEl.querySelector('summary').textContent = 'Select a month';
 
-  function yearMonthToText(yearMonth) {
-    const [yr, mo] = yearMonth.split('-');
-    return `${yr} ${monthNames[Number(mo) - 1]}`;
+  connectedCallback() {
+    this.innerHTML = html`
+      <details class="month-picker">
+        <summary>Average</summary>
+        <div class="content">
+          <!--<input
+            class="search gone"
+            type="search"
+            name="search"
+            placeholder="Search"
+            aria-label="Search"
+          /> -->
+          <div class="results">
+            <button class="outline">Average</button>
+          </div>
+        </div>
+      </details>
+    `;
+
+    const appContext = this.closest('x-app-context');
+    const searchEl = this.querySelector('.search');
+    const resultsEl = this.querySelector('.results');
+    const summaryEl = this.querySelector('summary');
+
+    // this.querySelector('summary').textContent = 'Select a month';
+
+    const summaryTextNode = document.createTextNode(
+      yearMonthToText(getCurrentYearMonth()),
+    );
+    summaryEl.innerHTML = '';
+    summaryEl.appendChild(summaryTextNode);
+    // On search input, filter results
+    // searchEl.addEventListener('keyup', this.applySearchFilter);
+    appContext.addEventListener('transactionsChange', this.update);
   }
-  const summaryTextNode = document.createTextNode(
-    yearMonthToText(getCurrentYearMonth()),
-  );
-  summaryEl.innerHTML = '';
-  summaryEl.appendChild(summaryTextNode);
-  // On search input, filter results
-  searchEl.addEventListener('keyup', applySearchFilter);
-
-  function updateMonthButtons() {
+  update() {
+    const appContext = this.closest('x-app-context');
+    const searchEl = this.querySelector('.search');
+    const resultsEl = this.querySelector('.results');
+    const summaryEl = this.querySelector('summary');
     const curMonthYear = getCurrentYearMonth();
     // Remove old buttons
-    monthPickerEl.querySelectorAll('button').forEach((btnEl) => {
+    this.querySelectorAll('button').forEach((btnEl) => {
       if (!btnEl.classList.contains('outline')) {
         //selected = btnEl.getAttribute('data-value');
       }
@@ -78,13 +107,13 @@ export function MonthPicker(monthPickerEl) {
       }
       e.addEventListener('click', () => {
         // update summary text
-        monthPickerEl.querySelector('summary').textContent = summaryText;
+        this.querySelector('summary').textContent = summaryText;
         // update highlighted button
-        [...monthPickerEl.querySelectorAll('button')]
+        [...this.querySelectorAll('button')]
           .filter((b) => b !== e)
           .forEach((b) => b.classList.add('outline'));
         e.classList.remove('outline');
-        monthPickerEl.removeAttribute('open');
+        this.removeAttribute('open');
         // run onClick
         if (onClick) {
           onClick(e);
@@ -120,8 +149,10 @@ export function MonthPicker(monthPickerEl) {
       });
       resultsEl.appendChild(btn);
     }
-    applySearchFilter();
+    // this.applySearchFilter();
   }
-
-  appContext.addEventListener('transactionsChange', updateMonthButtons);
 }
+
+export const registerMonthPicker = () => {
+  customElements.define('x-month-picker', MonthPicker);
+};

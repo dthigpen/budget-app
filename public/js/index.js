@@ -1,9 +1,11 @@
 import { registerAppContext } from './components/app-context.js';
 import { registerRouteComponent } from './components/route.js';
-import { MonthPicker, getCurrentYearMonth } from './mounts/month-picker.js';
-import { MonthTotalsPanel } from './mounts/month-totals.js';
-import { TransactionsPanel } from './mounts/month-transactions.js';
-import { MonthCategoriesPanel } from './mounts/month-categories.js';
+import { registerNav } from './components/nav.js';
+import { registerMonthPicker, getCurrentYearMonth } from './components/month-picker.js';
+import { registerCategoriesList } from './components/categories-list.js';
+import { registerCategories } from './components/categories.js';
+import { registerTotalsList } from './components/totals-list.js';
+import { registerTransactions } from './components/transactions.js';
 import { TransactionDialog } from './mounts/transaction-dialog.js';
 import { BudgetEditor } from './mounts/budget-editor.js';
 
@@ -14,12 +16,18 @@ const app = () => {
   console.log('Loading app');
   // register custom elements
   registerRouteComponent();
+  registerNav();
+  registerMonthPicker();
+  // registerCategoriesList();
   registerAppContext();
+  registerCategories();
+  registerTotalsList();
+  registerTransactions();
   // Setup mount function components
-  MonthPicker(document.querySelector('.month-picker'));
-  MonthTotalsPanel(document.querySelector('.overall-section-totals-list'));
-  MonthCategoriesPanel(document.querySelector('.breakdown-sections-container'));
-  TransactionsPanel(document.querySelector('.transactions-section'));
+  // MonthPicker(document.querySelector('.month-picker'));
+  // MonthTotalsPanel(document.querySelector('.overall-section-totals-list'));
+  // MonthCategoriesPanel(document.querySelector('.breakdown-sections-container'));
+  // TransactionsPanel(document.querySelector('.transactions-section'));
   TransactionDialog(document.querySelector('#transaction-modal'));
   // budget editor
   BudgetEditor(document.querySelector('.budget-editor-container'));

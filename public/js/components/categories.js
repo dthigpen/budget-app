@@ -22,6 +22,7 @@ function initCategoriesChart(chartEl) {
     },
   });
 }
+
 function updateCategoriesChart(chart, data) {
   console.log({ chartData: data });
   chart.data.labels = data.map((d) => d.name);
@@ -33,26 +34,98 @@ function updateCategoriesChart(chart, data) {
   ];
   chart.update();
 }
-export function MonthCategoriesPanel(el) {
-  const appContext = el.closest('x-app-context');
-  const categoryFiltersContainer = el.querySelector(
-    '.categories-section .filters',
-  );
-  const categoryTypeSelect = categoryFiltersContainer.querySelector(
-    'select[name="category-type-select"]',
-  );
-  const goalFilterSelect = categoryFiltersContainer.querySelector(
-    'select[name="goal-filter-select"]',
-  );
-  const categoriesChartEl = document.getElementById('categories-chart');
-  const categoriesChartMsgEl = document.getElementById('categories-chart-msg');
-  const categoriesChart = initCategoriesChart(categoriesChartEl);
 
-  function updateTopCategories() {
+class Categories extends HTMLElement {
+  #categoriesChart = null;
+  connectedCallback() {
+    this.innerHTML = html`
+      <div class="categories-section">
+        <h4 class="center">Categories</h4>
+        <div class="filters">
+          <select
+            name="category-type-select"
+            aria-label="Select category type"
+            class="small"
+          >
+            <option selected value="expense">Expenses</option>
+            <option value="income">Income</option>
+          </select>
+          <select
+            name="goal-filter-select"
+            aria-label="Select goal filter"
+            class="small"
+          >
+            <option selected value="all">All</option>
+            <option value="ontrack">On track</option>
+            <option value="overbudget">Overbudget</option>
+          </select>
+        </div>
+        <div class="top-categories-list">
+          <div class="top-categories-item">
+            <div class="spread">
+              <div class="category">Rent</div>
+              <div>
+                <span class="spent">1267.95</span> /
+                <span class="goal">1267.95</span>
+              </div>
+            </div>
+            <progress class="over" value="1268" max="1268" />
+          </div>
+        </div>
+      </div>
+    `;
+
+    const appContext = this.closest('x-app-context');
+    const categoryFiltersContainer = this.querySelector(
+      '.categories-section .filters',
+    );
+    const categoryTypeSelect = categoryFiltersContainer.querySelector(
+      'select[name="category-type-select"]',
+    );
+    const goalFilterSelect = categoryFiltersContainer.querySelector(
+      'select[name="goal-filter-select"]',
+    );
+    const categoriesChartEl = document.getElementById('categories-chart');
+    const categoriesChartMsgEl = document.getElementById(
+      'categories-chart-msg',
+    );
+    this.#categoriesChart = initCategoriesChart(categoriesChartEl);
+
+    appContext.addEventListener('transactionsChange', () => this.update());
+    appContext.addEventListener('budgetChange', () => this.update());
+    appContext.addEventListener('selectedMonthChange', () => this.update());
+
+    // setup event listeners for each btn
+    goalFilterSelect.addEventListener('change', () => {
+      this.update();
+    });
+
+    categoryTypeSelect.addEventListener('change', () => {
+      this.update();
+    });
+  }
+
+  update() {
+    const appContext = this.closest('x-app-context');
+    const categoryFiltersContainer = this.querySelector(
+      '.categories-section .filters',
+    );
+    const categoryTypeSelect = categoryFiltersContainer.querySelector(
+      'select[name="category-type-select"]',
+    );
+    const goalFilterSelect = categoryFiltersContainer.querySelector(
+      'select[name="goal-filter-select"]',
+    );
+    const categoriesChartEl = document.getElementById('categories-chart');
+    const categoriesChartMsgEl = document.getElementById(
+      'categories-chart-msg',
+    );
+    // const categoriesChart = initCategoriesChart(categoriesChartEl);
+
     // TODO remove add filter buttons if apply to current categories
     // e.g. only add overbudget filter if there are overbudget categories
 
-    const topCategoriesList = el.querySelector(
+    const topCategoriesList = this.querySelector(
       '.categories-section .top-categories-list',
     );
     // category type is income or expense
@@ -123,7 +196,9 @@ export function MonthCategoriesPanel(el) {
       (categoryAmounts?.length ?? 0 > 0) ? 'none' : 'block';
     categoriesChartEl.style.display =
       (categoryAmounts?.length ?? 0 > 0) ? 'block' : 'none';
-    updateCategoriesChart(categoriesChart, categoryAmounts);
+    if (this.#categoriesChart) {
+      updateCategoriesChart(this.#categoriesChart, categoryAmounts);
+    }
 
     const groupedByFilterType = groupBy(categoryAmounts, (category) => {
       if (!isNaN(category.goal)) {
@@ -215,31 +290,8 @@ export function MonthCategoriesPanel(el) {
     allOption.textContent = `(${allCount}) All`;
     disableElement(allOption, allCount === 0);
   }
-
-  appContext.addEventListener('transactionsChange', updateTopCategories);
-  appContext.addEventListener('budgetChange', updateTopCategories);
-  appContext.addEventListener('selectedMonthChange', updateTopCategories);
-
-  // setup event listeners for each btn
-  goalFilterSelect.addEventListener('change', () => {
-    updateTopCategories();
-  });
-
-  categoryTypeSelect.addEventListener('change', () => {
-    updateTopCategories();
-  });
 }
 
-/*
-function CategoriesChartPanel(panelEl) {
-  function updateChart() {
-    const categorizedTransactions = categorizeTransactions(
-      appContext.budget?.categories ?? [],
-      appContext.periodTransactions,
-    );
-  }
-  appContext.addEventListener('transactionsChange', updateChart);
-  appContext.addEventListener('budgetChange', updateChart);
-  appContext.addEventListener('selectedMonthChange', updateChart);
-}
-*/
+export const registerCategories = () => {
+  customElements.define('x-categories', Categories);
+};

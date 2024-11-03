@@ -6,9 +6,37 @@ import { CategoryType } from '../types.js';
 import { groupBy } from '../util.js';
 import { html } from '../html.js';
 
-export function MonthTotalsPanel(totalsListEl) {
-  const appContext = totalsListEl.closest('x-app-context');
-  function updateTotals() {
+class TotalsList extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = html`
+      <!--<div class="overall-section-totals-list"> -->
+      <!-- TODO use css grid here -->
+      <div class="overall-section-totals-item box">
+        <div>Income</div>
+        <div data-field="income">$0.00</div>
+      </div>
+      <div class="overall-section-totals-item box">
+        <div>Expenses</div>
+        <div data-field="expenses">(0%) $0.00</div>
+      </div>
+      <div class="overall-section-totals-item box">
+        <div>Savings</div>
+        <div data-field="savings">(0%) $0.00</div>
+      </div>
+      <div class="overall-section-totals-item box">
+        <div>Uncategorized</div>
+        <div data-field="uncategorized">(0%) $0.00</div>
+      </div>
+      <!-- </div> -->
+    `;
+    const appContext = this.closest('x-app-context');
+    appContext.addEventListener('transactionsChange', () => this.update());
+    appContext.addEventListener('budgetChange', () => this.update());
+    appContext.addEventListener('selectedMonthChange', () => this.update());
+  }
+
+  update() {
+    const appContext = this.closest('x-app-context');
     if ((appContext.budget?.categories ?? []).length === 0) {
       // TODO display message when no categories
       return;
@@ -64,7 +92,7 @@ export function MonthTotalsPanel(totalsListEl) {
       return sign + currencySymbol + Math.abs(num).toFixed(2);
     }
 
-    totalsListEl.innerHTML = html`
+    this.innerHTML = html`
       <div>
         <div>Income</div>
         <div>${formatMoney(incomeTotal)}</div>
@@ -83,7 +111,8 @@ export function MonthTotalsPanel(totalsListEl) {
       </div>
     `;
   }
-  appContext.addEventListener('transactionsChange', updateTotals);
-  appContext.addEventListener('budgetChange', updateTotals);
-  appContext.addEventListener('selectedMonthChange', updateTotals);
 }
+
+export const registerTotalsList = () => {
+  customElements.define('x-totals-list', TotalsList);
+};
