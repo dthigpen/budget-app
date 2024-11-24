@@ -21,80 +21,19 @@
     >
     <main class="container">
       <x-app-context>
-        <nav>
-          <ul>
-            <label>
-              <input name="demo-mode-switch" type="checkbox" role="switch" />
-              Demo Mode
-            </label>
-          </ul>
-          <ul>
-            <strong>Budget App</strong>
-          </ul>
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#/budget">Budget Editor</a></li>
-            <li><a href="#/settings">Settings</a></li>
-          </ul>
-        </nav>
+        <x-nav></x-nav>
         <!-- Routes can be nested, but the path must always be fully specified. -->
         <x-route path="/">
           <!-- <x-app-layout></x-app-layout> -->
           <x-route path="/" exact>
             <div class="month-sections box">
               <div class="top-bar">
-                <details class="month-picker">
-                  <summary>Average</summary>
-                  <div class="content">
-                    <input
-                      class="search gone"
-                      type="search"
-                      name="search"
-                      placeholder="Search"
-                      aria-label="Search"
-                    />
-                    <div class="results">
-                      <button class="outline">Average</button>
-                    </div>
-                  </div>
-                </details>
+                <x-month-picker></x-month-picker>
               </div>
               <article class="breakdown-card">
                 <div class="breakdown-sections-container">
-                  <div class="categories-section">
-                    <h4 class="center">Categories</h4>
-                    <div class="filters">
-                      <select
-                        name="category-type-select"
-                        aria-label="Select category type"
-                        class="small"
-                      >
-                        <option selected value="expense">Expenses</option>
-                        <option value="income">Income</option>
-                      </select>
-                      <select
-                        name="goal-filter-select"
-                        aria-label="Select goal filter"
-                        class="small"
-                      >
-                        <option selected value="all">All</option>
-                        <option value="ontrack">On track</option>
-                        <option value="overbudget">Overbudget</option>
-                      </select>
-                    </div>
-                    <div class="top-categories-list">
-                      <div class="top-categories-item">
-                        <div class="spread">
-                          <div class="category">Rent</div>
-                          <div>
-                            <span class="spent">1267.95</span> /
-                            <span class="goal">1267.95</span>
-                          </div>
-                        </div>
-                        <progress class="over" value="1268" max="1268" />
-                      </div>
-                    </div>
-                  </div>
+                  <x-categories></x-categories>
+
                   <div class="totals-section">
                     <h4 class="chart-title center">Overall</h4>
                     <div class="chart-section">
@@ -110,62 +49,11 @@
                       ></canvas>
                     </div>
                     <!-- <h4 class="center">Overall</h4> -->
-                    <div class="overall-section-totals-list">
-                      <!-- TODO use css grid here -->
-                      <div class="overall-section-totals-item box">
-                        <div>Income</div>
-                        <div data-field="income">$0.00</div>
-                      </div>
-                      <div class="overall-section-totals-item box">
-                        <div>Expenses</div>
-                        <div data-field="expenses">(0%) $0.00</div>
-                      </div>
-                      <div class="overall-section-totals-item box">
-                        <div>Savings</div>
-                        <div data-field="savings">(0%) $0.00</div>
-                      </div>
-                      <div class="overall-section-totals-item box">
-                        <div>Uncategorized</div>
-                        <div data-field="uncategorized">(0%) $0.00</div>
-                      </div>
-                    </div>
+                    <x-totals-list></x-totals-list>
                   </div>
                 </div>
               </article>
-              <article class="transactions-section box">
-                <header>
-                  <div class="transactions-section-bar">
-                    <h3 class="box">Transactions</h3>
-                    <div>
-                      <button
-                        data-target="transaction-modal"
-                        id="new-transaction-btn"
-                      >
-                        New
-                      </button>
-                      <div>
-                        <input id="file-upload-input" type="file" hidden />
-                        <button id="file-upload-btn">Upload</button>
-                      </div>
-                    </div>
-                  </div>
-                </header>
-                <div class="overflow-auto">
-                  <table id="transactions-table">
-                    <thead>
-                      <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Account</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-              </article>
+              <x-transactions></x-transactions>
             </div>
           </x-route>
           <x-route path="/budget" exact>
