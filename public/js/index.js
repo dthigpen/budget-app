@@ -32,9 +32,8 @@ const app = () => {
   BudgetEditor(document.querySelector('.budget-editor-container'));
   // load data from storage and generate reports
   const appContext = document.querySelector('x-app-context');
-  appContext.selectedMonth = getCurrentYearMonth();
   appContext.loadFromLocalStorage();
-  appContext.refreshReports();
+  appContext.selectedMonth = getCurrentYearMonth();
 
   const demoModeSwitch = document.querySelector(
     'nav [name="demo-mode-switch"]',

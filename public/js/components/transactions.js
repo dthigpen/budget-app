@@ -40,7 +40,7 @@ class Transactions extends HTMLElement {
     const newTransactionBtn = this.querySelector('#new-transaction-btn');
     // const modal = document.getElementById(newTransactionBtn.dataset.target);
     newTransactionBtn.addEventListener('click', (e) => {
-      console.log('New clicked!');
+      console.debug('New clicked!');
       appContext.openTransactionDialog();
     });
 
@@ -52,13 +52,7 @@ class Transactions extends HTMLElement {
   update() {
     const appContext = this.closest('x-app-context');
     const tableEl = this.querySelector('table');
-    const isAvg =
-      appContext.selectedMonth === undefined ||
-      appContext.selectedMonth === null;
-    const transactions = appContext.transactions ?? [];
-    const periodTransactions = isAvg
-      ? transactions
-      : transactions.filter((t) => t.date.startsWith(appContext.selectedMonth));
+    const periodTransactions = appContext.periodTransactions;
     // remove existing transaction rows
     tableEl
       .querySelector('tbody')

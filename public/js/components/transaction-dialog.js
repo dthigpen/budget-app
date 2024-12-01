@@ -96,6 +96,7 @@ class TransactionDialog extends HTMLElement {
       </dialog>
     `;
     const appContext = this.closest('x-app-context');
+    const dialog = this.querySelector('dialog');
     // setup initial listeners: validation, buttons
     const cancelEl = document.getElementById('transaction-modal-cancel-btn');
     const createEl = document.getElementById('transaction-modal-create-btn');
@@ -129,7 +130,7 @@ class TransactionDialog extends HTMLElement {
       dateInput.valueAsDate = new Date();
     });
     cancelEl.addEventListener('click', (e) => {
-      console.log('Cancel clicked!');
+      console.debug('Cancel clicked!');
     });
     const inputElements = [
       descriptionInput,
@@ -154,10 +155,9 @@ class TransactionDialog extends HTMLElement {
         account: accountInput.value,
       };
       appContext.transactions = [...appContext.transactions, newTransaction];
-      console.log('Transaction created: ' + newTransaction);
     });
     appContext.addEventListener('openTransactionDialog', () => {
-      this.setAttribute('open', 'true');
+      dialog.setAttribute('open', 'true');
       const data = appContext.transactionData;
       if (!data) {
         inputElements.forEach((inputEl) => {
@@ -173,7 +173,7 @@ class TransactionDialog extends HTMLElement {
       }
     });
     appContext.addEventListener('closeTransactionDialog', () => {
-      this.removeAttribute('open');
+      dialog.removeAttribute('open');
     });
   }
 
