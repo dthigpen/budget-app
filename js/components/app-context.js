@@ -59,6 +59,11 @@ class AppContext extends HTMLElement {
 
   #transactionDialogData = null;
   #transactionDialogOpen = false;
+
+  get transactionDialogData() {
+    return this.#transactionDialogData;
+  }
+
   openTransactionDialog(data = null) {
     this.#transactionDialogOpen = true;
     this.#transactionDialogData = data;

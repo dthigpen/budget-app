@@ -310,3 +310,10 @@ label {
   justify-content: flex-end;
   gap: 1rem;
 }
+
+x-transactions .right {
+  text-align: end;
+}
+x-transactions tbody tr {
+  cursor: pointer;
+}

@@ -68,6 +68,7 @@ class Transactions extends HTMLElement {
       periodTransactions,
     );
     categorizedTransactions.reverse();
+    const amountColumnIndex = 2;
     for (const transaction of categorizedTransactions) {
       const row = tableEl.querySelector('tbody').insertRow();
       const data = [
@@ -78,9 +79,16 @@ class Transactions extends HTMLElement {
         transaction.category ?? 'Uncategorized',
         'Entered',
       ];
-      data.forEach((d) =>
-        row.insertCell().appendChild(document.createTextNode(d)),
-      );
+      row.addEventListener('click', () => {
+        appContext.openTransactionDialog(transaction);
+      });
+      data.forEach((d, i) => {
+        const cell = row.insertCell();
+        if (i === amountColumnIndex) {
+          cell.classList.add('right');
+        }
+        cell.appendChild(document.createTextNode(d));
+      });
     }
   }
 }
