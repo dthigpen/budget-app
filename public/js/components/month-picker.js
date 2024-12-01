@@ -73,7 +73,7 @@ class MonthPicker extends HTMLElement {
     summaryEl.appendChild(summaryTextNode);
     // On search input, filter results
     // searchEl.addEventListener('keyup', this.applySearchFilter);
-    appContext.addEventListener('transactionsChange', this.update);
+    appContext.addEventListener('transactionsChange', () => this.update);
   }
   update() {
     const appContext = this.closest('x-app-context');
@@ -83,9 +83,6 @@ class MonthPicker extends HTMLElement {
     const curMonthYear = getCurrentYearMonth();
     // Remove old buttons
     this.querySelectorAll('button').forEach((btnEl) => {
-      if (!btnEl.classList.contains('outline')) {
-        //selected = btnEl.getAttribute('data-value');
-      }
       btnEl.remove();
     });
 
