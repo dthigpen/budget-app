@@ -24,7 +24,6 @@ function initCategoriesChart(chartEl) {
 }
 
 function updateCategoriesChart(chart, data) {
-  console.log({ chartData: data });
   chart.data.labels = data.map((d) => d.name);
   chart.data.datasets = [
     {
@@ -136,12 +135,7 @@ class Categories extends HTMLElement {
     topCategoriesList
       .querySelectorAll(`.${rowClass}`)
       .forEach((e) => e.remove());
-    const isAvg = !appContext.selectedMonth;
     const categorizedTransactions = appContext.categorizePeriodTransactions();
-    console.log({
-      month: appContext.selectedMonth,
-      ts: categorizedTransactions,
-    });
     let itemsHtml = '';
     const categoryAmounts = Object.entries(
       calculateCategoryAmounts(
@@ -188,8 +182,6 @@ class Categories extends HTMLElement {
         }, true),
       );
 
-    console.log({ period: appContext.periodTransactions });
-    console.log({ categoryAmounts });
     categoriesChartEl.style.height = '300px';
     categoriesChartEl.style.width = '300px';
     categoriesChartMsgEl.style.display =
@@ -213,7 +205,6 @@ class Categories extends HTMLElement {
       }
       return GoalFilters.ON_TRACK;
     });
-    console.log({ groupedByFilterType });
     const overbudgetCount =
       groupedByFilterType?.[GoalFilters.OVERBUDGET]?.length ?? 0;
     const onTrackCount =

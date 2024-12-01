@@ -100,10 +100,6 @@ class AppContext extends HTMLElement {
     if (this.#selectedMonth) {
       return this.#selectedMonth;
     }
-    // try return latest month
-    if (this.#transactions?.length ?? 0 > 0) {
-      return this.#transactions.at(-1).date.slice(0, 7);
-    }
     // otherwise
     return null;
   }
@@ -135,17 +131,17 @@ class AppContext extends HTMLElement {
     this.selectedMonth = null;
   }
   loadFromLocalStorage() {
-    console.log('Loading state from local storage');
+    console.info('Loading state from local storage');
     // default to demo mode
     const isDemoMode = this.demoMode;
     const key = isDemoMode
       ? APP_STATE_DEMO_MODE_STORAGE_KEY
       : APP_STATE_STORAGE_KEY;
     let stateStr = localStorage.getItem(key) ?? '{}';
-    console.log(`Is demo mode: ${isDemoMode}`);
+    console.debug(`Demo mode enabled: ${isDemoMode}`);
     // if demo mode and no demo data, create demo data
     if (isDemoMode && stateStr === '{}') {
-      console.log(`Generating demo data`);
+      console.debug(`Generating demo data`);
       saveTestDataIntoStorage();
       stateStr = localStorage.getItem(key) ?? '{}';
     }
@@ -158,5 +154,6 @@ class AppContext extends HTMLElement {
     this.style.display = 'contents';
   }
 }
-export const registerAppContext = () =>
+export const registerAppContext = () => {
   customElements.define('x-app-context', AppContext);
+};
