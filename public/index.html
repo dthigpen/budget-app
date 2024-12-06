@@ -57,22 +57,7 @@
             </div>
           </x-route>
           <x-route path="/budget" exact>
-            <article class="budget-editor-container">
-              <header>
-                <h3>Budget JSON Editor</h3>
-              </header>
-              <!-- <div class="budget-editor-container"> -->
-              <textarea
-                name="budget-editor-text-area"
-                aria-label="Budget JSON Editor"
-                rows="10"
-              ></textarea>
-              <!-- </div> -->
-              <footer>
-                <button class="reset-default">Load Default</button>
-                <button class="save">Save</button>
-              </footer>
-            </article>
+            <x-budget-editor></x-budget-editor>
           </x-route>
           <x-route path="/settings" exact>
             <article>

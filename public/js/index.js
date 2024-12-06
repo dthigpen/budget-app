@@ -5,12 +5,11 @@ import {
   registerMonthPicker,
   getCurrentYearMonth,
 } from './components/month-picker.js';
-import { registerCategoriesList } from './components/categories-list.js';
 import { registerCategories } from './components/categories.js';
 import { registerTotalsList } from './components/totals-list.js';
 import { registerTransactions } from './components/transactions.js';
 import { registerTransactionDialog } from './components/transaction-dialog.js';
-import { BudgetEditor } from './mounts/budget-editor.js';
+import { registerBudgetEditor } from './components/budget-editor.js';
 
 // Generate test data and save to local storage
 //generateTestData();
@@ -21,15 +20,12 @@ const app = () => {
   registerRouteComponent();
   registerNav();
   registerMonthPicker();
-  // registerCategoriesList();
   registerAppContext();
   registerCategories();
   registerTotalsList();
   registerTransactions();
   registerTransactionDialog();
-  // Setup mount function components
-  // budget editor
-  BudgetEditor(document.querySelector('.budget-editor-container'));
+  registerBudgetEditor();
   // load data from storage and generate reports
   const appContext = document.querySelector('x-app-context');
   appContext.loadFromLocalStorage();
