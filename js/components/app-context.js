@@ -64,6 +64,38 @@ class AppContext extends HTMLElement {
     return this.#transactionDialogData;
   }
 
+  updateTransaction(transactionDataToReplace, transactionData) {
+    const transactions = this.transactions;
+    const index = transactions.findIndex((t) => {
+      return (
+        t.date === transactionDataToReplace.date &&
+        t.description === transactionDataToReplace.description &&
+        t.amount === transactionDataToReplace.amount &&
+        t.account === transactionDataToReplace.account
+      );
+    });
+    if (index >= 0) {
+      transactions[index] = transactionData;
+      this.transactions = [...transactions];
+    }
+  }
+
+  deleteTransaction(transactionData) {
+    const transactions = this.transactions;
+    const index = transactions.findIndex((t) => {
+      return (
+        t.date === transactionData.date &&
+        t.description === transactionData.description &&
+        t.amount === transactionData.amount &&
+        t.account === transactionData.account
+      );
+    });
+    if (index >= 0) {
+      transactions[index] = transactionData;
+      this.transactions = transactions.toSpliced(index, 1);
+    }
+  }
+
   openTransactionDialog(data = null) {
     this.#transactionDialogOpen = true;
     this.#transactionDialogData = data;
@@ -135,6 +167,22 @@ class AppContext extends HTMLElement {
     this.settings = mergeDeep(DEFAULT_SETTINGS, state.settings ?? {});
     this.selectedMonth = null;
   }
+
+  saveToLocalStorage() {
+    // TODO if this is true, user needs a way to "reset" demo data
+    const allowDemoModeSaving = true;
+    const isDemoMode = this.demoMode;
+    // return early if not going to save to demo area
+    // this allows demo data to remain unchanged on refreshes
+    if (isDemoMode && !allowDemoModeSaving) {
+      return;
+    }
+    const key = isDemoMode
+      ? APP_STATE_DEMO_MODE_STORAGE_KEY
+      : APP_STATE_STORAGE_KEY;
+    const stateStr = this.contextToString();
+    localStorage.setItem(key, stateStr);
+  }
   loadFromLocalStorage() {
     console.info('Loading state from local storage');
     // default to demo mode
@@ -153,7 +201,19 @@ class AppContext extends HTMLElement {
     this.contextFromString(stateStr);
   }
 
-  connectedCallback() {}
+  connectedCallback() {
+    const changeEvents = [
+      'transactionsChange',
+      'budgetChange',
+      'reportsChange',
+      'settingsChange',
+    ];
+    changeEvents.forEach((e) => {
+      this.addEventListener(e, () => {
+        this.saveToLocalStorage();
+      });
+    });
+  }
   constructor() {
     super();
     this.style.display = 'contents';

@@ -57,22 +57,7 @@
             </div>
           </x-route>
           <x-route path="/budget" exact>
-            <article class="budget-editor-container">
-              <header>
-                <h3>Budget JSON Editor</h3>
-              </header>
-              <!-- <div class="budget-editor-container"> -->
-              <textarea
-                name="budget-editor-text-area"
-                aria-label="Budget JSON Editor"
-                rows="10"
-              ></textarea>
-              <!-- </div> -->
-              <footer>
-                <button class="reset-default">Load Default</button>
-                <button class="save">Save</button>
-              </footer>
-            </article>
+            <x-budget-editor></x-budget-editor>
           </x-route>
           <x-route path="/settings" exact>
             <article>
@@ -87,6 +72,42 @@
           </x-route>
         </x-route>
         <x-transaction-dialog></x-transaction-dialog>
+        <dialog id="delete-transaction-confirm-dialog">
+          <article>
+            <header>
+              <button
+                id="delete-transaction-confirm-dialog-close-btn"
+                aria-label="Close"
+                rel="prev"
+                data-target="delete-transaction-confirm-dialog"
+                onclick="toggleModal(event)"
+              ></button>
+              <h3 class="title">Delete Transaction</h3>
+            </header>
+            <div class="content-container">
+              <p>Are you sure you want to delete this transaction?</p>
+            </div>
+            <footer>
+              <button
+                id="delete-transaction-confirm-dialog-cancel-btn"
+                role="button"
+                class="secondary"
+                data-target="delete-transaction-confirm-dialog"
+                onclick="toggleModal(event)"
+              >
+                Cancel
+              </button>
+              <button
+                id="delete-transaction-confirm-dialog-confirm-btn"
+                autofocus
+                data-target="delete-transaction-confirm-dialog"
+                onclick="toggleModal(event)"
+              >
+                Delete
+              </button>
+            </footer>
+          </article>
+        </dialog>
       </x-app-context>
       <script src="./js/modal.js"></script>
       <script type="module" src="./js/index.js"></script>
