@@ -325,3 +325,14 @@ x-transactions tbody tr:hover td {
 x-transaction-dialog .-gone {
   display: none;
 }
+
+.settings-container {
+  gap: 1rem;
+}
+.settings-container p {
+  margin-bottom: 0;
+}
+
+.-gone {
+  display: none;
+}
