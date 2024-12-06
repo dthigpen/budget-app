@@ -6,18 +6,18 @@ Currently this project is an experiment to simplify the web stack, taking inspir
 
 ## Features
 
-| Status | Feature                    |
-|--------|----------------------------|
-|   ✅    | No third-party bank access |
-|   ✅    | Monthly spending breakdown |
-|   ✅    | Chart view of spending |
-|   ✅    | Plain-text budget format to reduce platform lock-in  |
-|   ❌    | Create, remove, update, delete individual transactions  |
-|   ❌    | Configurable, automatic transaction categorization |
-|   ❌    | Budget goals |
-|   ❌    | Batch import of transactions in CSV or JSON format |
-|   ❌    | Transaction, budget, report export |
-|   ❌    | PWA (Progressive Web App) support for offline usage |
+| Feature                                                 | Status           |
+|---------------------------------------------------------|------------------|
+| No third-party bank access (on-device only)             | ✅ (Implemented) |
+| Monthly spending breakdown                              | ✅ (Implemented) |
+| Chart view of spending                                  | ✅ (Implemented) |
+| Plain-text budget format to reduce platform lock-in     | ✅ (Implemented) |
+| Create, remove, update, delete individual transactions  | ✅ (Implemented) |
+| CSV transaction import                                  | 🗓️ (Planned)     |
+| Full data import/export (transactions, budget, settings)| 🗓️ (Planned)     |
+| Configurable, automatic transaction categorization      | 🗓️ (Planned)     |
+| Budget category goals                                   | 🗓️ (Planned)     |
+| PWA (Progressive Web App) support for offline usage     | 🗓️ (Planned)     |
 
 ## Screenshots
 
