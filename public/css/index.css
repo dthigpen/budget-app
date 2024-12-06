@@ -317,3 +317,11 @@ x-transactions .right {
 x-transactions tbody tr {
   cursor: pointer;
 }
+
+x-transactions tbody tr:hover td {
+  background-color: var(--pico-secondary-hover-background);
+}
+
+x-transaction-dialog .-gone {
+  display: none;
+}

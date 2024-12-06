@@ -34,6 +34,7 @@ class TransactionDialog extends HTMLElement {
                       type="number"
                       name="amount"
                       min="0.01"
+                      step="0.01"
                       placeholder="0.0"
                       required
                     />
@@ -70,7 +71,7 @@ class TransactionDialog extends HTMLElement {
                   Category
                   <input
                     type="text"
-                    name="amount"
+                    name="category"
                     placeholder="Uncategorized"
                     disabled
                   />
@@ -85,8 +86,13 @@ class TransactionDialog extends HTMLElement {
               class="secondary"
               data-target="transaction-modal"
             >
-              Cancel</button
-            ><button
+              Cancel
+            </button>
+            <button class="-gone" id="transaction-modal-delete-btn">
+              Delete
+            </button>
+
+            <button
               id="transaction-modal-create-btn"
               autofocus
               data-target="transaction-modal"
@@ -101,6 +107,7 @@ class TransactionDialog extends HTMLElement {
     const dialog = this.querySelector('dialog');
     // setup initial listeners: validation, buttons
     const cancelEl = document.getElementById('transaction-modal-cancel-btn');
+    const deleteEl = document.getElementById('transaction-modal-delete-btn');
     const createEl = document.getElementById('transaction-modal-create-btn');
     const descriptionInput = this.querySelector('[name="description"]');
     const amountInput = this.querySelector('[name="amount"]');
@@ -131,6 +138,26 @@ class TransactionDialog extends HTMLElement {
       e.preventDefault();
       dateInput.valueAsDate = new Date();
     });
+    deleteEl.addEventListener('click', () => {
+      console.debug('Delete clicked!');
+      const confirmDialog = document.querySelector(
+        '#delete-transaction-confirm-dialog',
+      );
+      const confirmBtn = confirmDialog.querySelector(
+        '#delete-transaction-confirm-dialog-confirm-btn',
+      );
+      confirmBtn.addEventListener(
+        'click',
+        () => {
+          console.debug('Delete confirmed!');
+          appContext.deleteTransaction(appContext.transactionDialogData);
+          appContext.closeTransactionDialog();
+        },
+        { once: true },
+      );
+      // Open confirmation dialog
+      confirmDialog.setAttribute('open', 'true');
+    });
     cancelEl.addEventListener('click', () => {
       console.debug('Cancel clicked!');
       appContext.closeTransactionDialog();
@@ -142,10 +169,12 @@ class TransactionDialog extends HTMLElement {
       accountInput,
     ];
     createEl.addEventListener('click', (e) => {
+      console.debug('Clicked Update!');
       const validityStates = inputElements.map((el) => {
         return setValidity(el);
       });
       if (validityStates.includes(false)) {
+        console.debug('Invalid data!');
         e.preventDefault();
         e.stopPropagation();
         return;
@@ -162,20 +191,9 @@ class TransactionDialog extends HTMLElement {
       if (!transactionDataToReplace) {
         appContext.transactions = [...appContext.transactions, transactionData];
       } else {
-        const transactions = appContext.transactions;
-        const index = transactions.findIndex((t) => {
-          return (
-            t.date === transactionDataToReplace.date &&
-            t.description === transactionDataToReplace.description &&
-            t.amount === transactionDataToReplace.amount &&
-            t.account === transactionDataToReplace.account
-          );
-        });
-        if (index >= 0) {
-          transactions[index] = transactionData;
-          appContext.transactions = [...transactions];
-        }
+        appContext.updateTransaction(transactionDataToReplace, transactionData);
       }
+      console.debug('Closing transaction dialog');
       appContext.closeTransactionDialog();
     });
     appContext.addEventListener('openTransactionDialog', () => {
@@ -188,6 +206,7 @@ class TransactionDialog extends HTMLElement {
           dateInput.valueAsDate = new Date();
           this.querySelector('header .title').textContent = 'New Transaction';
           createEl.textContent = 'Create';
+          deleteEl.classList.add('-gone');
         });
       } else {
         descriptionInput.value = data.description;
@@ -196,6 +215,7 @@ class TransactionDialog extends HTMLElement {
         accountInput.value = data.account;
         this.querySelector('header .title').textContent = 'Edit Transaction';
         createEl.textContent = 'Update';
+        deleteEl.classList.remove('-gone');
       }
     });
     appContext.addEventListener('closeTransactionDialog', () => {
