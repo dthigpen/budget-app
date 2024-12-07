@@ -1,6 +1,7 @@
 import { registerAppContext } from './components/app-context.js';
 import { registerRouteComponent } from './components/route.js';
 import { registerNav } from './components/nav.js';
+import { registerSettings } from './components/settings.js';
 import {
   registerMonthPicker,
   getCurrentYearMonth,
@@ -17,10 +18,11 @@ import { registerBudgetEditor } from './components/budget-editor.js';
 const app = () => {
   console.log('Loading app');
   // register custom elements
-  registerRouteComponent();
-  registerNav();
-  registerMonthPicker();
   registerAppContext();
+  registerNav();
+  registerSettings();
+  registerRouteComponent();
+  registerMonthPicker();
   registerCategories();
   registerTotalsList();
   registerTransactions();
@@ -30,15 +32,6 @@ const app = () => {
   const appContext = document.querySelector('x-app-context');
   appContext.loadFromLocalStorage();
   appContext.selectedMonth = getCurrentYearMonth();
-
-  const demoModeSwitch = document.querySelector(
-    'nav [name="demo-mode-switch"]',
-  );
-  demoModeSwitch.checked = appContext.demoMode;
-  demoModeSwitch.addEventListener('click', function () {
-    const checked = this.checked;
-    appContext.demoMode = checked;
-  });
 
   console.log('App loaded');
 };

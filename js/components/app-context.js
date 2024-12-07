@@ -146,12 +146,18 @@ class AppContext extends HTMLElement {
   }
 
   get demoMode() {
-    return JSON.parse(localStorage.getItem(DEMO_MODE_ENABLED_KEY) ?? 'true');
+    // logic to start in demo mode on first visit
+    const rawValue = localStorage.getItem(DEMO_MODE_ENABLED_KEY);
+    if (rawValue === null) {
+      localStorage.setItem(DEMO_MODE_ENABLED_KEY, 'true');
+    }
+    return localStorage.getItem(DEMO_MODE_ENABLED_KEY) === 'true';
   }
 
   set demoMode(value) {
     localStorage.setItem(DEMO_MODE_ENABLED_KEY, JSON.stringify(value === true));
     this.loadFromLocalStorage();
+    this.dispatchEvent(new CustomEvent('settingsChange'));
   }
   contextToString() {
     return JSON.stringify({
@@ -191,7 +197,6 @@ class AppContext extends HTMLElement {
       ? APP_STATE_DEMO_MODE_STORAGE_KEY
       : APP_STATE_STORAGE_KEY;
     let stateStr = localStorage.getItem(key) ?? '{}';
-    console.debug(`Demo mode enabled: ${isDemoMode}`);
     // if demo mode and no demo data, create demo data
     if (isDemoMode && stateStr === '{}') {
       console.debug(`Generating demo data`);

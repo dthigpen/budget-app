@@ -39,7 +39,6 @@ class BudgetEditor extends HTMLElement {
     function updateTextArea() {
       // TODO convey that the default budget is unsaved and Save needs to be pressed
       const budget = appContext.budget ?? defaultBudget;
-      console.log({ budget, defaultBudget });
       textArea.value = JSON.stringify(budget, null, 2);
     }
     updateTextArea();
