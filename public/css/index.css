@@ -336,3 +336,50 @@ x-transaction-dialog .-gone {
 .-gone {
   display: none;
 }
+
+x-assign-category-dialog dialog {
+  /* overflow: hidden; */
+}
+
+x-assign-category-dialog article {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+x-assign-category-dialog header,
+footer {
+  flex-shrink: 0;
+}
+
+x-assign-category-dialog .form-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
+body:has(dialog[open]) {
+  /* overflow:hidden; */
+}
+/* 
+x-assign-category-dialog .form-container {
+  overflow-y: clip;
+}
+x-assign-category-dialog .content {
+  overflow-y: auto
+} */
+x-assign-category-dialog .form-row {
+  flex-wrap: nowrap;
+  align-items: center;
+}
+x-assign-category-dialog .form-row input[type='checkbox'] {
+  margin: 0;
+  display: inline-flex;
+}
+x-assign-category-dialog .form-row div {
+  flex-grow: 0;
+}
+
+x-assign-category-dialog .category-edit input[name$='-label'] {
+  flex-shrink: 2;
+}
