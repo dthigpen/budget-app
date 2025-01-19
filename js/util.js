@@ -103,3 +103,10 @@ function displayElement(el, display = true) {
     el.classList.add('-gone');
   }
 }
+
+export function checkValidity(el) {
+  const isValid = el.checkValidity();
+  const invalidStr = isValid ? 'false' : 'true';
+  el.setAttribute('aria-invalid', invalidStr);
+  return isValid;
+}

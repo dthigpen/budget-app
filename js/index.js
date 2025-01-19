@@ -11,6 +11,7 @@ import { registerTotalsList } from './components/totals-list.js';
 import { registerTransactions } from './components/transactions.js';
 import { registerTransactionDialog } from './components/transaction-dialog.js';
 import { registerBudgetEditor } from './components/budget-editor.js';
+import { registerAsignCategoryDialog } from './components/assign-category-dialog.js';
 
 // Generate test data and save to local storage
 //generateTestData();
@@ -28,6 +29,7 @@ const app = () => {
   registerTransactions();
   registerTransactionDialog();
   registerBudgetEditor();
+  registerAsignCategoryDialog();
   // load data from storage and generate reports
   const appContext = document.querySelector('x-app-context');
   appContext.loadFromLocalStorage();

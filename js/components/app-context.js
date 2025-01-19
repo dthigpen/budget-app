@@ -57,6 +57,24 @@ class AppContext extends HTMLElement {
     );
   }
 
+  #assignCategoryDialogData = null;
+  #assignCategoryDialogOpen = false;
+
+  get assignCategoryDialogData() {
+    return this.#assignCategoryDialogData;
+  }
+  openAssignCategoryDialog(data = null) {
+    this.#assignCategoryDialogOpen = true;
+    this.#assignCategoryDialogData = data;
+    this.dispatchEvent(new CustomEvent('openAssignCategoryDialog'));
+  }
+  closeAssignCategoryDialog(clear = true) {
+    this.#assignCategoryDialogOpen = false;
+    if (clear) {
+      this.#assignCategoryDialogData = null;
+    }
+    this.dispatchEvent(new CustomEvent('closeAssignCategoryDialog'));
+  }
   #transactionDialogData = null;
   #transactionDialogOpen = false;
 

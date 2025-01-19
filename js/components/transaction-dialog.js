@@ -1,4 +1,5 @@
 import { html } from '../html.js';
+import { checkValidity } from '../util.js';
 
 class TransactionDialog extends HTMLElement {
   connectedCallback() {
@@ -69,13 +70,16 @@ class TransactionDialog extends HTMLElement {
                 </label>
                 <label>
                   Category
+                  <!-- 
                   <input
                     type="text"
                     name="category"
                     placeholder="Uncategorized"
                     disabled
                   />
+                 -->
                 </label>
+                <button type="button" name="category">Select category</button>
               </fieldset>
             </form>
           </div>
@@ -113,18 +117,24 @@ class TransactionDialog extends HTMLElement {
     const amountInput = this.querySelector('[name="amount"]');
     const accountInput = this.querySelector('[name="account"]');
     const dateInput = this.querySelector('[name="date"]');
+    const categoryButton = this.querySelector('[name="category"]');
     const todayButton = this.querySelector('[name="today"]');
 
-    function setValidity(el) {
-      const isValid = el.checkValidity();
-      const invalidStr = isValid ? 'false' : 'true';
-      el.setAttribute('aria-invalid', invalidStr);
-      return isValid;
-    }
+    categoryButton.addEventListener('click', () => {
+      appContext.openAssignCategoryDialog(appContext.transactionDialogData);
+    });
     function setupValidityListener(inputEl) {
-      return () => setValidity(inputEl);
+      return () => checkValidity(inputEl);
     }
 
+    function getTransactionData() {
+      return {
+        description: descriptionInput.value,
+        amount: Number(Number(amountInput.value).toFixed(2)),
+        date: dateInput.value,
+        account: accountInput.value,
+      };
+    }
     descriptionInput.addEventListener(
       'input',
       setupValidityListener(descriptionInput),
@@ -171,7 +181,7 @@ class TransactionDialog extends HTMLElement {
     createEl.addEventListener('click', (e) => {
       console.debug('Clicked Update!');
       const validityStates = inputElements.map((el) => {
-        return setValidity(el);
+        return checkValidity(el);
       });
       if (validityStates.includes(false)) {
         console.debug('Invalid data!');
@@ -180,12 +190,7 @@ class TransactionDialog extends HTMLElement {
         return;
       }
 
-      const transactionData = {
-        description: descriptionInput.value,
-        amount: Number(Number(amountInput.value).toFixed(2)),
-        date: dateInput.value,
-        account: accountInput.value,
-      };
+      const transactionData = getTransactionData();
       // TODO Find a better way of finding the transaction to update.
       const transactionDataToReplace = appContext.transactionDialogData;
       if (!transactionDataToReplace) {
