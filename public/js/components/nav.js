@@ -5,17 +5,15 @@ class Nav extends HTMLElement {
     this.innerHTML = html`
       <nav>
         <ul>
+        	<li><a class="plain" href="#"><strong>Budget App</strong></a></li>
+        </ul>
+        <ul>
           <label>
             <input name="demo-mode-switch" type="checkbox" role="switch" />
             Demo Mode
           </label>
         </ul>
         <ul>
-          <strong>Budget App</strong>
-        </ul>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#/budget">Budget Editor</a></li>
           <li><a href="#/settings">Settings</a></li>
         </ul>
       </nav>

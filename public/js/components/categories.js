@@ -40,6 +40,7 @@ class Categories extends HTMLElement {
     this.innerHTML = html`
       <div class="categories-section">
         <h4 class="center">Categories</h4>
+        <div class="filters-bar">
         <div class="filters">
           <select
             name="category-type-select"
@@ -58,6 +59,11 @@ class Categories extends HTMLElement {
             <option value="ontrack">On track</option>
             <option value="overbudget">Overbudget</option>
           </select>
+        </div>
+        <div>
+          <img class="toggle-chart" src="img/pie_chart_light.svg"/>
+          <button class="new-category-btn">New</button>
+        </div>
         </div>
         <div class="top-categories-list">
           <div class="top-categories-item">

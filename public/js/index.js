@@ -10,6 +10,7 @@ import { registerCategories } from './components/categories.js';
 import { registerTotalsList } from './components/totals-list.js';
 import { registerTransactions } from './components/transactions.js';
 import { registerTransactionDialog } from './components/transaction-dialog.js';
+import { registerCategoryDialog } from './components/category-dialog.js';
 import { registerBudgetEditor } from './components/budget-editor.js';
 import { registerAsignCategoryDialog } from './components/assign-category-dialog.js';
 
@@ -28,6 +29,7 @@ const app = () => {
   registerTotalsList();
   registerTransactions();
   registerTransactionDialog();
+  registerCategoryDialog();
   registerBudgetEditor();
   registerAsignCategoryDialog();
   // load data from storage and generate reports
@@ -35,6 +37,15 @@ const app = () => {
   appContext.loadFromLocalStorage();
   appContext.selectedMonth = getCurrentYearMonth();
 
+
+	const toggleButton = document.querySelector('.toggle-chart');
+	const chart = document.querySelector('.chart-section');
+	toggleButton.addEventListener('click', () => {
+		const isVisible = chart.style.display === 'block';
+		chart.style.display = isVisible ? 'none' : 'block';
+		toggleButton.setAttribute('aria-expanded', !isVisible)
+		toggleButton.textContent = isVisible ? 'Show Chart' : 'Hide Chart'
+	})
   console.log('App loaded');
 };
 
